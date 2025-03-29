@@ -60,8 +60,12 @@ const AnimationManager: FC<Props> = ({
   }, [userVoiceAnalyser]);
 
   return (
-    <div className="flex items-center justify-center">
-      <button ref={canvasContainer} onClick={onOrbClick} className="orb-animation">
+    <div className="flex items-center justify-center w-full">
+      <button 
+        ref={canvasContainer} 
+        onClick={onOrbClick} 
+        className="orb-animation mx-auto"
+      >
         {canvasContainer.current && (
           <Hal
             width={size.width}

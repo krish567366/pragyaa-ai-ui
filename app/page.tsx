@@ -23,7 +23,6 @@ import { TerminalIcon } from "./components/icons/TerminalIcon";
 import Header from "./components/Header";
 import { useStsQueryParams } from "./hooks/UseStsQueryParams";
 import { useDeepgram } from "./context/DeepgramContextProvider";
-import BehindTheScenes from "./components/BehindTheScenes";
 import LandingSections from "./components/LandingSections";
 
 const DesktopMenuItems = () => {
@@ -46,7 +45,6 @@ export default function Home() {
   const { messages, status } = useVoiceBot();
   const { rateLimited } = useDeepgram();
   const [conversationOpen, setConversationOpen] = useState(false);
-  const [behindTheScenesOpen, setBehindTheScenesOpen] = useState(false);
 
   const toggleConversation = () => setConversationOpen(!conversationOpen);
 
@@ -62,10 +60,10 @@ export default function Home() {
         </div>
 
         <div className="flex flex-grow relative">
-          {/* Main Content */}
+          {/* Main Content - Now centered without the right panel */}
           <div className="flex-1 flex justify-center items-start md:items-center">
-            <div className="md:h-full flex flex-col min-w-[80vw] md:min-w-[30vw] max-w-[80vw] justify-center">
-              <div className="flex md:order-last md:mt-4 justify-center">
+            <div className="md:h-full flex flex-col min-w-[80vw] md:min-w-[30vw] max-w-[80vw] justify-center items-center">
+              <div className="flex md:order-last md:mt-4 justify-center w-full">
                 <Intelligence />
               </div>
               <Suspense>
@@ -89,7 +87,7 @@ export default function Home() {
                 !rateLimited &&
                 status !== VoiceBotStatus.SLEEPING &&
                 status !== VoiceBotStatus.NONE && (
-                  <div>
+                  <div className="w-full">
                     {/* Desktop */}
                     <div className="hidden md:flex justify-center text-gray-450">Try saying:</div>
                     <div className="hidden md:grid max-w-max mx-auto grid-cols-3 gap-4 mt-6 relative">
@@ -106,29 +104,6 @@ export default function Home() {
                 )}
             </div>
           </div>
-
-          {/* Right Panel (Desktop only) */}
-          <div
-            className="hidden md:block p-6 pl-0 max-h-screen overflow-hidden"
-            style={{ zIndex: 11 }}
-          >
-            <div className="flex flex-col gap-4">
-              {behindTheScenesOpen ? (
-                <BehindTheScenes onClose={() => setBehindTheScenesOpen(false)} />
-              ) : (
-                <>
-                  <button
-                    className="w-full px-4 py-3 bg-gray-850 hover:bg-gray-800 text-gray-25 rounded-lg transition-colors flex items-center gap-2"
-                    onClick={() => setBehindTheScenesOpen(true)}
-                  >
-                    <TerminalIcon className="w-5 h-5" />
-                    <span className="font-medium flex-grow text-left">Backstage</span>
-                    <CaretIcon className="w-5 h-5" />
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
         </div>
       </div>
 
@@ -136,7 +111,7 @@ export default function Home() {
       {conversationOpen && <Conversation toggleConversation={toggleConversation} />}
 
       {/* Desktop Bottom Stuff */}
-      <div className={`hidden md:flex z-0 absolute bottom-0 left-8 right-[320px] mb-8`}>
+      <div className={`hidden md:flex z-0 absolute bottom-0 left-8 right-8 mb-8`}>
         <div className="space-y-4">
           <Suspense>
             <DesktopMenuItems />

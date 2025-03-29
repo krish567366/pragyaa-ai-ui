@@ -29,60 +29,136 @@ const LandingSections: FC = () => {
       {/* How It Works Section */}
       <section className="py-20 bg-gray-900">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-6">
-            How It Works
-          </h2>
-          <p className="text-gray-400 text-center mb-16 max-w-2xl mx-auto">
-            Get started with VoiceAgent in just five simple steps
-          </p>
-          <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto">
-            <div className="flex items-start space-x-6">
-              <div className="bg-purple-600 w-12 h-12 rounded-full flex-shrink-0 flex items-center justify-center">
-                <span className="text-xl font-bold">01</span>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold mb-2">Quick Sign-Up</h3>
-                <p className="text-gray-400">Create your account in seconds and access the VoiceAgent dashboard instantly.</p>
-              </div>
+          <div className="max-w-3xl mx-auto text-center mb-16">
+            <div className="inline-block px-4 py-2 bg-gray-800 rounded-full text-sm mb-4">
+              How It Works
             </div>
-            
-            <div className="flex items-start space-x-6">
-              <div className="bg-purple-600 w-12 h-12 rounded-full flex-shrink-0 flex items-center justify-center">
-                <span className="text-xl font-bold">02</span>
+            <h2 className="text-4xl md:text-6xl font-bold mb-6">
+              Built For Voice<br />Interaction
+            </h2>
+            <p className="text-gray-400 text-lg">
+              VoiceAgent makes voice interaction easy with a simple, streamlined process that takes you from setup to conversation in just a few steps.
+            </p>
+          </div>
+
+          <div className="max-w-6xl mx-auto">
+            {/* Step 1 */}
+            <div className="flex flex-col md:flex-row items-center gap-8 mb-20">
+              <div className="w-full md:w-1/2">
+                <div className="bg-gray-800 rounded-2xl p-8 relative overflow-hidden">
+                  <div className="text-[120px] font-bold text-blue-500/20 absolute -top-10 -left-6">
+                    01
+                  </div>
+                  <div className="relative z-10">
+                    <h3 className="text-2xl font-bold mb-4">Quick Setup</h3>
+                    <p className="text-gray-400">
+                      Get started instantly - no account required. Just click the orb and start speaking with your AI assistant.
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div>
-                <h3 className="text-xl font-bold mb-2">Choose Your Voice</h3>
-                <p className="text-gray-400">Select from our range of natural-sounding AI voices to personalize your experience.</p>
+              <div className="w-full md:w-1/2 flex justify-center">
+                <div className="bg-gray-800 rounded-2xl p-6 w-full max-w-md">
+                  <div className="aspect-video rounded-lg bg-gray-700 flex items-center justify-center">
+                    <span className="text-4xl">🎯</span>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="flex items-start space-x-6">
-              <div className="bg-purple-600 w-12 h-12 rounded-full flex-shrink-0 flex items-center justify-center">
-                <span className="text-xl font-bold">03</span>
+            {/* Step 2 */}
+            <div className="flex flex-col md:flex-row-reverse items-center gap-8 mb-20">
+              <div className="w-full md:w-1/2">
+                <div className="bg-gray-800 rounded-2xl p-8 relative overflow-hidden">
+                  <div className="text-[120px] font-bold text-blue-500/20 absolute -top-10 -left-6">
+                    02
+                  </div>
+                  <div className="relative z-10">
+                    <h3 className="text-2xl font-bold mb-4">Choose Your Voice</h3>
+                    <p className="text-gray-400">
+                      Select from our range of natural-sounding AI voices to personalize your experience.
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div>
-                <h3 className="text-xl font-bold mb-2">Configure Settings</h3>
-                <p className="text-gray-400">Customize your interaction preferences and adjust voice parameters to your needs.</p>
+              <div className="w-full md:w-1/2 flex justify-center">
+                <div className="bg-gray-800 rounded-2xl p-6 w-full max-w-md">
+                  <div className="aspect-video rounded-lg bg-gray-700 flex items-center justify-center">
+                    <span className="text-4xl">🎤</span>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="flex items-start space-x-6">
-              <div className="bg-purple-600 w-12 h-12 rounded-full flex-shrink-0 flex items-center justify-center">
-                <span className="text-xl font-bold">04</span>
+            {/* Step 3 */}
+            <div className="flex flex-col md:flex-row items-center gap-8 mb-20">
+              <div className="w-full md:w-1/2">
+                <div className="bg-gray-800 rounded-2xl p-8 relative overflow-hidden">
+                  <div className="text-[120px] font-bold text-blue-500/20 absolute -top-10 -left-6">
+                    03
+                  </div>
+                  <div className="relative z-10">
+                    <h3 className="text-2xl font-bold mb-4">Start Speaking</h3>
+                    <p className="text-gray-400">
+                      Simply speak naturally - our AI understands context and nuance, making conversations feel effortless.
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div>
-                <h3 className="text-xl font-bold mb-2">Start Conversation</h3>
-                <p className="text-gray-400">Click the orb to begin speaking with your AI assistant - it's that simple!</p>
+              <div className="w-full md:w-1/2 flex justify-center">
+                <div className="bg-gray-800 rounded-2xl p-6 w-full max-w-md">
+                  <div className="aspect-video rounded-lg bg-gray-700 flex items-center justify-center">
+                    <span className="text-4xl">💬</span>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="flex items-start space-x-6">
-              <div className="bg-purple-600 w-12 h-12 rounded-full flex-shrink-0 flex items-center justify-center">
-                <span className="text-xl font-bold">05</span>
+            {/* Step 4 */}
+            <div className="flex flex-col md:flex-row-reverse items-center gap-8 mb-20">
+              <div className="w-full md:w-1/2">
+                <div className="bg-gray-800 rounded-2xl p-8 relative overflow-hidden">
+                  <div className="text-[120px] font-bold text-blue-500/20 absolute -top-10 -left-6">
+                    04
+                  </div>
+                  <div className="relative z-10">
+                    <h3 className="text-2xl font-bold mb-4">Get Smart Responses</h3>
+                    <p className="text-gray-400">
+                      Receive intelligent, contextual responses in real-time with our advanced AI processing.
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div>
-                <h3 className="text-xl font-bold mb-2">Enjoy Smart Responses</h3>
-                <p className="text-gray-400">Experience fluid conversations with context-aware AI that understands and responds naturally.</p>
+              <div className="w-full md:w-1/2 flex justify-center">
+                <div className="bg-gray-800 rounded-2xl p-6 w-full max-w-md">
+                  <div className="aspect-video rounded-lg bg-gray-700 flex items-center justify-center">
+                    <span className="text-4xl">🤖</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 5 */}
+            <div className="flex flex-col md:flex-row items-center gap-8">
+              <div className="w-full md:w-1/2">
+                <div className="bg-gray-800 rounded-2xl p-8 relative overflow-hidden">
+                  <div className="text-[120px] font-bold text-blue-500/20 absolute -top-10 -left-6">
+                    05
+                  </div>
+                  <div className="relative z-10">
+                    <h3 className="text-2xl font-bold mb-4">Customize & Extend</h3>
+                    <p className="text-gray-400">
+                      Adjust settings, customize prompts, and extend functionality to match your specific needs.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="w-full md:w-1/2 flex justify-center">
+                <div className="bg-gray-800 rounded-2xl p-6 w-full max-w-md">
+                  <div className="aspect-video rounded-lg bg-gray-700 flex items-center justify-center">
+                    <span className="text-4xl">⚙️</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -250,6 +326,40 @@ const LandingSections: FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Footer Section */}
+      <footer className="py-16 bg-gray-900">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col items-center justify-center space-y-8">
+            {/* Logo */}
+            <div className="flex items-center space-x-2">
+              <img 
+                src="/pragyaa_transparent_hor.png" 
+                alt="VoiceAgent Logo" 
+                className="h-8 object-contain"
+              />
+            </div>
+
+            {/* Links */}
+            <div className="flex items-center space-x-8 text-gray-400">
+              <a href="#privacy" className="hover:text-white transition-colors">
+                Privacy
+              </a>
+              <a href="#terms" className="hover:text-white transition-colors">
+                Terms
+              </a>
+              <a href="#signup" className="hover:text-white transition-colors">
+                Sign up
+              </a>
+            </div>
+
+            {/* Copyright */}
+            <div className="text-gray-400 text-center">
+              ©2025 VoiceAgent. All Rights Reserved.
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
