@@ -32,10 +32,10 @@ const DesktopMenuItems = () => {
       <PopupButton
         buttonIcon={<PencilIcon />}
         buttonText={
-          <span>Prompt {instructions && <span className="text-green-spring">*</span>}</span>
+          <span>Test Call Guideline {instructions && <span className="text-green-spring">*</span>}</span>
         }
         popupContent={<InstructionInput className="w-96" focusOnMount />}
-        tooltipText={instructions ? "Using your custom prompt. Click to edit." : null}
+        tooltipText={instructions ? "Using your custom guideline. Click to edit." : null}
       />
     </>
   );
@@ -73,6 +73,10 @@ export default function Home() {
                   requiresUserActionToInitialize={isMobile}
                 />
               </Suspense>
+              {/* Desktop Menu Items - Now positioned at orb level */}
+              <div className="hidden md:flex absolute left-8 top-1/2 -translate-y-1/2">
+                <DesktopMenuItems />
+              </div>
               {/* Desktop Conversation Toggle */}
               {has4ConversationMessages ? (
                 <div className="hidden md:flex justify-center mt-auto mb-4 md:mt-4 text-gray-350">
@@ -114,12 +118,9 @@ export default function Home() {
       <div className={`hidden md:flex z-0 absolute bottom-0 left-8 right-8 mb-8`}>
         <div className="space-y-4">
           <Suspense>
-            <DesktopMenuItems />
+            <Latency />
           </Suspense>
         </div>
-        <Suspense>
-          <Latency />
-        </Suspense>
       </div>
 
       {/* Mobile Bottom Stuff */}

@@ -40,10 +40,10 @@ const InstructionInput: FC<Props> = ({ focusOnMount = false, ...rest }) => {
       <label>
         <div className="flex items-center gap-2 text-sm uppercase font-bold font-favorit text-gray-25">
           <PencilIcon />
-          Prompt
+          Test Call Guideline
         </div>
         {instructions && (
-          <div className="text-xs text-gray-450 mt-3">{instructions && "* Prompt is user-set"}</div>
+          <div className="text-xs text-gray-450 mt-3">{instructions && "* Guideline is user-set"}</div>
         )}
         <textarea
           ref={inputRef}
