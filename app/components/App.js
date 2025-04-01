@@ -7,7 +7,8 @@ import { usePathname } from "next/navigation";
 import Transcript from "./Transcript";
 import { useDeepgram } from "../context/DeepgramContextProvider";
 import { useMicrophone } from "../context/MicrophoneContextProvider";
-import { EventType, useVoiceBot, VoiceBotStatus } from "../context/VoiceBotContextProvider";
+import { useVoiceBot } from '../context/VoiceBotContextProvider';
+import { VoiceBotStatus, EventType } from '../types/voicebot';
 import { createAudioBuffer, playAudioBuffer } from "../utils/audioUtils";
 import { sendSocketMessage, sendMicToSocket } from "app/utils/deepgramUtils";
 import { isMobile } from "react-device-detect";
@@ -95,9 +96,33 @@ export const App = ({
    * Logic for microphone found in Microphone Context Provider
    */
   useEffect(() => {
-    setupMicrophone();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    const initializeMicrophone = async () => {
+      try {
+        await setupMicrophone();
+      } catch (error) {
+        console.error('Failed to initialize microphone:', error);
+        // Retry after a short delay
+        setTimeout(() => {
+          setupMicrophone();
+        }, 1000);
+      }
+    };
+
+    initializeMicrophone();
+
+    // Cleanup function
+    return () => {
+      if (microphone) {
+        microphone.disconnect();
+      }
+      if (processor) {
+        processor.disconnect();
+      }
+      if (microphoneAudioContext) {
+        microphoneAudioContext.close();
+      }
+    };
+  }, [setupMicrophone, microphone, processor, microphoneAudioContext]);
 
   useEffect(() => {
     let wakeLock;
@@ -157,11 +182,12 @@ export const App = ({
        */
       return () => {
         socket.removeEventListener("open", onOpen);
-        microphone.ondataavailable = null;
+        if (microphone) {
+          microphone.ondataavailable = null;
+        }
       };
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [microphone, socket, microphoneState, defaultStsConfig, pathname]);
+  }, [microphone, socket, microphoneState, defaultStsConfig, pathname, startMicrophone, startListening, toggleSleep, applyParamsToConfig]);
 
   /**
    * Performs checks to ensure that the system is ready to proceed with setting up the data transmission

@@ -6,8 +6,8 @@ import { stsConfig } from "./lib/constants";
 import {
   isConversationMessage,
   useVoiceBot,
-  VoiceBotStatus,
 } from "./context/VoiceBotContextProvider";
+import { VoiceBotStatus } from './types/voicebot';
 import { CaretIcon } from "./components/icons/CaretIcon";
 import { withBasePath } from "./utils/deepgramUtils";
 import PromptSuggestions from "./components/PromptSuggestions";
@@ -24,11 +24,12 @@ import Header from "./components/Header";
 import { useStsQueryParams } from "./hooks/UseStsQueryParams";
 import { useDeepgram } from "./context/DeepgramContextProvider";
 import LandingSections from "./components/LandingSections";
+import UseCaseButtons from "./components/UseCaseButtons";
 
 const DesktopMenuItems = () => {
   const { instructions } = useStsQueryParams();
   return (
-    <>
+    <div className="flex flex-col">
       <PopupButton
         buttonIcon={<PencilIcon />}
         buttonText={
@@ -37,7 +38,8 @@ const DesktopMenuItems = () => {
         popupContent={<InstructionInput className="w-96" focusOnMount />}
         tooltipText={instructions ? "Using your custom guideline. Click to edit." : null}
       />
-    </>
+      <UseCaseButtons />
+    </div>
   );
 };
 

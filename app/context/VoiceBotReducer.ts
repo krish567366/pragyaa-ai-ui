@@ -1,10 +1,10 @@
-import {
-  type VoiceBotState,
-  VoiceBotStatus,
-  type ConversationMessage,
-  type LatencyMessage,
-  type BehindTheScenesEvent,
-} from "./VoiceBotContextProvider";
+import type {
+  VoiceBotState,
+  ConversationMessage,
+  LatencyMessage,
+  BehindTheScenesEvent,
+} from '../types/voicebot';
+import { VoiceBotStatus } from '../types/voicebot';
 
 export const START_LISTENING = "start_listening";
 export const START_THINKING = "start_thinking";

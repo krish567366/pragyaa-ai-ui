@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useRef } from "react";
+import { createContext, useContext, useState, useRef, useEffect } from "react";
 import { getApiKey, sendKeepAliveMessage } from "app/utils/deepgramUtils";
 
 const DeepgramContext = createContext();
@@ -14,52 +14,96 @@ const DeepgramContextProvider = ({ children }) => {
   const maxReconnectAttempts = 5;
 
   const connectToDeepgram = async () => {
+    console.log("Attempting to connect to Deepgram...");
     if (reconnectAttempts >= maxReconnectAttempts) {
       console.log("Max reconnect attempts reached.");
-      // we don't actually know this is a rate limit, but want to show this anyways
       setRateLimited(true);
       return;
     }
 
     setSocketState(0); // connecting
 
-    const newSocket = new WebSocket("wss://agent.deepgram.com/agent", [
-      "token",
-      await getApiKey(),
-    ]);
+    try {
+      const apiKey = await getApiKey();
+      console.log("Got API key, creating WebSocket connection...");
+      
+      const newSocket = new WebSocket("wss://agent.deepgram.com/agent", [
+        "token",
+        apiKey,
+      ]);
 
-    const onOpen = () => {
-      setSocketState(1); // connected
-      setReconnectAttempts(0); // reset reconnect attempts after a successful connection
-      console.log("WebSocket connected.");
-      keepAlive.current = setInterval(sendKeepAliveMessage(newSocket), 10000);
-    };
+      const onOpen = () => {
+        setSocketState(1); // connected
+        setReconnectAttempts(0); // reset reconnect attempts after a successful connection
+        console.log("WebSocket connected successfully.");
+        keepAlive.current = setInterval(sendKeepAliveMessage(newSocket), 10000);
+      };
 
-    const onError = (err) => {
+      const onError = (err) => {
+        setSocketState(2); // error
+        console.error("WebSocket error:", err);
+      };
+
+      const onClose = () => {
+        clearInterval(keepAlive.current);
+        setSocketState(3); // closed
+        console.info("WebSocket closed. Attempting to reconnect...");
+        setTimeout(connectToDeepgram, 3000); // reconnect after 3 seconds
+        setReconnectAttempts((attempts) => attempts + 1);
+      };
+
+      const onMessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          console.log("Received message from Deepgram:", data);
+          
+          // Handle different message types
+          switch (data.type) {
+            case "Welcome":
+              console.log("Connected to Deepgram with session ID:", data.session_id);
+              break;
+            case "Error":
+              console.error("Deepgram error:", data.error);
+              break;
+            case "Transcript":
+              console.log("Transcript:", data.text);
+              break;
+            case "Audio":
+              console.log("Received audio data");
+              break;
+            default:
+              console.log("Unknown message type:", data.type);
+          }
+        } catch (error) {
+          console.error("Error processing message:", error);
+        }
+      };
+
+      newSocket.binaryType = "arraybuffer";
+      newSocket.addEventListener("open", onOpen);
+      newSocket.addEventListener("error", onError);
+      newSocket.addEventListener("close", onClose);
+      newSocket.addEventListener("message", onMessage);
+
+      setSocket(newSocket);
+    } catch (error) {
+      console.error("Error in connectToDeepgram:", error);
       setSocketState(2); // error
-      console.error("Websocket error", err);
-    };
-
-    const onClose = () => {
-      clearInterval(keepAlive.current);
-      setSocketState(3); // closed
-      console.info("WebSocket closed. Attempting to reconnect...");
-      setTimeout(connectToDeepgram, 3000); // reconnect after 3 seconds
-      setReconnectAttempts((attempts) => attempts + 1);
-    };
-
-    const onMessage = () => {
-      // console.info("message", e);
-    };
-
-    newSocket.binaryType = "arraybuffer";
-    newSocket.addEventListener("open", onOpen);
-    newSocket.addEventListener("error", onError);
-    newSocket.addEventListener("close", onClose);
-    newSocket.addEventListener("message", onMessage);
-
-    setSocket(newSocket);
+    }
   };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      console.log("DeepgramContextProvider unmounting, cleaning up...");
+      if (keepAlive.current) {
+        clearInterval(keepAlive.current);
+      }
+      if (socket) {
+        socket.close();
+      }
+    };
+  }, [socket]);
 
   return (
     <DeepgramContext.Provider

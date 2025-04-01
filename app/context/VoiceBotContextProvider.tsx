@@ -1,6 +1,6 @@
 "use client";
 
-import {
+import React, {
   createContext,
   useContext,
   useReducer,
@@ -19,76 +19,35 @@ import {
   SET_PARAMS_ON_COPY_URL,
   ADD_BEHIND_SCENES_EVENT,
 } from "./VoiceBotReducer";
+import type {
+  VoiceBotMessage,
+  ConversationMessage,
+  LatencyMessage,
+  UserMessage,
+  AssistantMessage,
+  VoiceBotState,
+  VoiceBotAction,
+  BehindTheScenesEvent,
+} from "../types/voicebot";
+import { VoiceBotStatus, EventType } from '../types/voicebot';
 
 const defaultSleepTimeoutSeconds = 30;
 
-export enum EventType {
-  SETTINGS_APPLIED = "SettingsApplied",
-  AGENT_AUDIO_DONE = "AgentAudioDone",
-  USER_STARTED_SPEAKING = "UserStartedSpeaking",
-  AGENT_STARTED_SPEAKING = "AgentStartedSpeaking",
-  CONVERSATION_TEXT = "ConversationText",
-  END_OF_THOUGHT = "EndOfThought",
-}
-
-export type VoiceBotMessage = LatencyMessage | ConversationMessage;
-
-export type LatencyMessage = {
-  total_latency: number | null;
-  tts_latency: number;
-  ttt_latency: number;
+export const isConversationMessage = (message: VoiceBotMessage): message is ConversationMessage => {
+  return message.type === "user" || message.type === "assistant";
 };
 
-export type ConversationMessage = UserMessage | AssistantMessage;
+export const isLatencyMessage = (message: VoiceBotMessage): message is LatencyMessage => {
+  return message.type === "latency";
+};
 
-export type UserMessage = { user: string };
-export type AssistantMessage = { assistant: string };
+export const isUserMessage = (message: ConversationMessage): message is UserMessage => {
+  return message.type === "user";
+};
 
-export type BehindTheScenesEvent =
-  | { type: EventType.SETTINGS_APPLIED }
-  | { type: EventType.USER_STARTED_SPEAKING }
-  | { type: EventType.AGENT_STARTED_SPEAKING }
-  | { type: EventType.CONVERSATION_TEXT; role: "user" | "assistant"; content: string }
-  | { type: "Interruption" }
-  | { type: EventType.END_OF_THOUGHT };
-
-export const isConversationMessage = (
-  voiceBotMessage: VoiceBotMessage,
-): voiceBotMessage is ConversationMessage =>
-  isUserMessage(voiceBotMessage as UserMessage) ||
-  isAssistantMessage(voiceBotMessage as AssistantMessage);
-
-export const isLatencyMessage = (
-  voiceBotMessage: VoiceBotMessage,
-): voiceBotMessage is LatencyMessage =>
-  (voiceBotMessage as LatencyMessage).tts_latency !== undefined;
-
-export const isUserMessage = (
-  conversationMessage: ConversationMessage,
-): conversationMessage is UserMessage => (conversationMessage as UserMessage).user !== undefined;
-
-export const isAssistantMessage = (
-  conversationMessage: ConversationMessage,
-): conversationMessage is AssistantMessage =>
-  (conversationMessage as AssistantMessage).assistant !== undefined;
-
-export type VoiceBotAction = { type: string };
-
-export enum VoiceBotStatus {
-  LISTENING = "listening",
-  THINKING = "thinking",
-  SPEAKING = "speaking",
-  SLEEPING = "sleeping",
-  NONE = "",
-}
-
-export interface VoiceBotState {
-  status: VoiceBotStatus;
-  sleepTimer: number;
-  messages: VoiceBotMessage[];
-  attachParamsToCopyUrl: boolean;
-  behindTheScenesEvents: BehindTheScenesEvent[];
-}
+export const isAssistantMessage = (message: ConversationMessage): message is AssistantMessage => {
+  return message.type === "assistant";
+};
 
 export interface VoiceBotContext extends VoiceBotState {
   addVoicebotMessage: (newMessage: VoiceBotMessage) => void;
@@ -102,31 +61,29 @@ export interface VoiceBotContext extends VoiceBotState {
   setAttachParamsToCopyUrl: (attachParamsToCopyUrl: boolean) => void;
 }
 
-const initialState: VoiceBotState = {
-  status: VoiceBotStatus.NONE,
-  sleepTimer: 0,
-  messages: [],
-  attachParamsToCopyUrl: true,
-  behindTheScenesEvents: [],
-};
+export const VoiceBotContext = createContext<VoiceBotContext | null>(null);
 
-export const VoiceBotContext = createContext<VoiceBotContext | undefined>(undefined);
-
-export function useVoiceBot() {
+export const useVoiceBot = () => {
   const context = useContext(VoiceBotContext);
-  if (!context) throw new Error("useVoiceBot must be used within a VoiceBotProvider");
+  if (!context) {
+    throw new Error('useVoiceBot must be used within a VoiceBotProvider');
+  }
   return context;
-}
+};
 
 interface Props {
   children: React.ReactNode;
 }
 
 export function VoiceBotProvider({ children }: Props) {
-  const [state, dispatch] = useReducer(voiceBotReducer, initialState);
-  // Note: After waking from sleep, the bot must wait for the user to speak before playing audio.
-  // This prevents unintended audio playback and conversation queue logging if the user rapidly toggles between
-  // sleep and wake states in the middle of a bot response.
+  const [state, dispatch] = useReducer(voiceBotReducer, {
+    status: VoiceBotStatus.NONE,
+    sleepTimer: 0,
+    messages: [],
+    attachParamsToCopyUrl: false,
+    behindTheScenesEvents: [],
+  });
+
   const isWaitingForUserVoiceAfterSleep = useRef(false);
 
   useEffect(() => {
@@ -145,90 +102,53 @@ export function VoiceBotProvider({ children }: Props) {
   }, [state.sleepTimer]);
 
   const addVoicebotMessage = (newMessage: VoiceBotMessage) => {
-    dispatch({ type: ADD_MESSAGE, payload: newMessage });
+    dispatch({ type: "add_message", payload: newMessage });
   };
 
   const addBehindTheScenesEvent = (event: BehindTheScenesEvent) => {
-    dispatch({ type: ADD_BEHIND_SCENES_EVENT, payload: event });
+    dispatch({ type: "add_behind_scenes_event", payload: event });
   };
-
-  const startSpeaking = useCallback(
-    (wakeFromSleep = false) => {
-      if (wakeFromSleep || state.status !== VoiceBotStatus.SLEEPING) {
-        dispatch({ type: START_SPEAKING });
-      }
-    },
-    [state.status],
-  );
-
-  const startListening = useCallback(
-    (wakeFromSleep = false) => {
-      if (wakeFromSleep || state.status !== VoiceBotStatus.SLEEPING) {
-        dispatch({ type: START_LISTENING });
-      }
-    },
-    [state.status],
-  );
 
   const startSleeping = () => {
-    isWaitingForUserVoiceAfterSleep.current = true;
-    dispatch({ type: START_SLEEPING });
+    dispatch({ type: "start_sleeping" });
   };
 
-  const toggleSleep = useCallback(() => {
+  const startSpeaking = (wakeFromSleep = false) => {
+    dispatch({ type: "start_speaking" });
+  };
+
+  const startListening = (wakeFromSleep = false) => {
+    dispatch({ type: "start_listening" });
+  };
+
+  const toggleSleep = () => {
     if (state.status === VoiceBotStatus.SLEEPING) {
       startListening(true);
     } else {
       startSleeping();
     }
-  }, [state.status, startListening]);
+  };
 
-  const endOfTurn = (message: ConversationMessage, previousMessage: ConversationMessage) =>
-    isAssistantMessage(previousMessage) && isUserMessage(message);
+  const setAttachParamsToCopyUrl = (attachParamsToCopyUrl: boolean) => {
+    dispatch({ type: "set_attach_params_to_copy_url", payload: attachParamsToCopyUrl });
+  };
 
-  const displayOrder = useMemo(() => {
-    const conv = state.messages.filter(isConversationMessage);
-    const lat = state.messages.filter(isLatencyMessage);
+  const value = {
+    ...state,
+    addVoicebotMessage,
+    addBehindTheScenesEvent,
+    isWaitingForUserVoiceAfterSleep,
+    startSpeaking,
+    startListening,
+    startSleeping,
+    toggleSleep,
+    displayOrder: state.messages,
+    setAttachParamsToCopyUrl,
+  };
 
-    const acc: Array<VoiceBotMessage> = [];
-
-    conv.forEach((conversationMessage, i, arr) => {
-      const previousMessage = arr[i - 1];
-      if (previousMessage && endOfTurn(conversationMessage, previousMessage)) {
-        const latencyMessage = lat.shift();
-        if (latencyMessage) acc.push(latencyMessage);
-      }
-      acc.push(conversationMessage);
-      if (isAssistantMessage(conversationMessage) && i === arr.length - 1) {
-        const latencyMessage = lat.shift();
-        if (latencyMessage) acc.push(latencyMessage);
-      }
-    });
-    return acc;
-  }, [state.messages]);
-
-  const setAttachParamsToCopyUrl = useCallback((attachParamsToCopyUrl: boolean) => {
-    dispatch({
-      type: SET_PARAMS_ON_COPY_URL,
-      payload: attachParamsToCopyUrl,
-    });
-  }, []);
-
-  const contextValue = useMemo(
-    () => ({
-      ...state,
-      isWaitingForUserVoiceAfterSleep,
-      displayOrder,
-      addVoicebotMessage,
-      addBehindTheScenesEvent,
-      startSpeaking,
-      startListening,
-      startSleeping,
-      toggleSleep,
-      setAttachParamsToCopyUrl,
-    }),
-    [state, startListening, startSpeaking, toggleSleep, setAttachParamsToCopyUrl, displayOrder],
+  return (
+    <VoiceBotContext.Provider value={value}>
+      {children}
+    </VoiceBotContext.Provider>
   );
-
-  return <VoiceBotContext.Provider value={contextValue}>{children}</VoiceBotContext.Provider>;
 }

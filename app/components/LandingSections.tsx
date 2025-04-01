@@ -15,12 +15,12 @@ const LandingSections: FC = () => {
               <p className="text-gray-400">Engage in fluid, context-aware conversations with advanced AI understanding.</p>
             </div>
             <div className="bg-gray-900 p-8 rounded-xl">
-              <h3 className="text-2xl font-bold mb-4">Multiple Voices</h3>
-              <p className="text-gray-400">Choose from a variety of natural-sounding voices to personalize your experience.</p>
+              <h3 className="text-2xl font-bold mb-4">Multiple Voices & Multi-lingual</h3>
+              <p className="text-gray-400">Choose from a variety of natural-sounding voices to personalize your experience. Multi-lingual Support.</p>
             </div>
             <div className="bg-gray-900 p-8 rounded-xl">
               <h3 className="text-2xl font-bold mb-4">Real-time Response</h3>
-              <p className="text-gray-400">Experience lightning-fast responses with minimal latency.</p>
+              <p className="text-gray-400">Experience lightning-fast responses with minimal latency. Support for seamless Interuptions mid-sentence.</p>
             </div>
           </div>
         </div>
@@ -52,7 +52,7 @@ const LandingSections: FC = () => {
                   <div className="relative z-10">
                     <h3 className="text-2xl font-bold mb-4">Quick Setup</h3>
                     <p className="text-gray-400">
-                      Get started instantly - no account required. Just click the orb and start speaking with your AI assistant.
+                      Get started instantly. Just add your custom call guideline, click the orb and start speaking with your VoiceAgent.
                     </p>
                   </div>
                 </div>
@@ -148,7 +148,7 @@ const LandingSections: FC = () => {
                   <div className="relative z-10">
                     <h3 className="text-2xl font-bold mb-4">Customize & Extend</h3>
                     <p className="text-gray-400">
-                      Adjust settings, customize prompts, and extend functionality to match your specific needs.
+                      Connect with us to customize your VocieAgent, extend functionality to match your specific needs.
                     </p>
                   </div>
                 </div>
