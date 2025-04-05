@@ -1,4 +1,5 @@
 import type { FC } from 'react';
+import Image from 'next/image';
 
 const LandingSections: FC = () => {
   return (
@@ -59,8 +60,16 @@ const LandingSections: FC = () => {
               </div>
               <div className="w-full md:w-1/2 flex justify-center">
                 <div className="bg-gray-800 rounded-2xl p-6 w-full max-w-md">
-                  <div className="aspect-video rounded-lg bg-gray-700 flex items-center justify-center">
-                    <span className="text-4xl">🎯</span>
+                  <div className="aspect-video rounded-lg bg-gray-700 flex items-center justify-center overflow-hidden">
+                    <Image
+                      src="/VoiceAgent_1.png"
+                      alt="Quick Setup"
+                      width={400}
+                      height={225}
+                      priority
+                      unoptimized
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 </div>
               </div>
@@ -83,8 +92,16 @@ const LandingSections: FC = () => {
               </div>
               <div className="w-full md:w-1/2 flex justify-center">
                 <div className="bg-gray-800 rounded-2xl p-6 w-full max-w-md">
-                  <div className="aspect-video rounded-lg bg-gray-700 flex items-center justify-center">
-                    <span className="text-4xl">🎤</span>
+                  <div className="aspect-video rounded-lg bg-gray-700 flex items-center justify-center overflow-hidden">
+                    <Image
+                      src="/VoiceAgent_2.png"
+                      alt="Choose Your Voice"
+                      width={400}
+                      height={225}
+                      priority
+                      unoptimized
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 </div>
               </div>
@@ -107,8 +124,16 @@ const LandingSections: FC = () => {
               </div>
               <div className="w-full md:w-1/2 flex justify-center">
                 <div className="bg-gray-800 rounded-2xl p-6 w-full max-w-md">
-                  <div className="aspect-video rounded-lg bg-gray-700 flex items-center justify-center">
-                    <span className="text-4xl">💬</span>
+                  <div className="aspect-video rounded-lg bg-gray-700 flex items-center justify-center overflow-hidden">
+                    <Image
+                      src="/VoiceAgent_3.png"
+                      alt="Start Speaking"
+                      width={400}
+                      height={225}
+                      priority
+                      unoptimized
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 </div>
               </div>
@@ -131,8 +156,16 @@ const LandingSections: FC = () => {
               </div>
               <div className="w-full md:w-1/2 flex justify-center">
                 <div className="bg-gray-800 rounded-2xl p-6 w-full max-w-md">
-                  <div className="aspect-video rounded-lg bg-gray-700 flex items-center justify-center">
-                    <span className="text-4xl">🤖</span>
+                  <div className="aspect-video rounded-lg bg-gray-700 flex items-center justify-center overflow-hidden">
+                    <Image
+                      src="/VoiceAgent_4.png"
+                      alt="Get Smart Responses"
+                      width={400}
+                      height={225}
+                      priority
+                      unoptimized
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 </div>
               </div>
@@ -155,8 +188,16 @@ const LandingSections: FC = () => {
               </div>
               <div className="w-full md:w-1/2 flex justify-center">
                 <div className="bg-gray-800 rounded-2xl p-6 w-full max-w-md">
-                  <div className="aspect-video rounded-lg bg-gray-700 flex items-center justify-center">
-                    <span className="text-4xl">⚙️</span>
+                  <div className="aspect-video rounded-lg bg-gray-700 flex items-center justify-center overflow-hidden">
+                    <Image
+                      src="/VoiceAgent_5.png"
+                      alt="Customize & Extend"
+                      width={400}
+                      height={225}
+                      priority
+                      unoptimized
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 </div>
               </div>
