@@ -14,7 +14,7 @@ import PromptSuggestions from "./components/PromptSuggestions";
 import Conversation from "./components/Conversation";
 import VoiceSelector from "./components/VoiceSelector/VoiceSelector";
 import { isMobile } from "react-device-detect";
-import PopupButton from "./components/PopupButton";
+import { PopupButton } from "./components/PopupButton";
 import MobileMenu from "./components/MobileMenu";
 import Latency from "./components/Latency";
 import { PencilIcon } from "./components/icons/PencilIcon";
@@ -25,19 +25,19 @@ import { useDeepgram } from "./context/DeepgramContextProvider";
 import LandingSections from "./components/LandingSections";
 import UseCaseButtons from "./components/UseCaseButtons";
 import ProductNav from './components/ProductNav';
+import { usePathname } from "next/navigation";
 
 const DesktopMenuItems = () => {
   const { instructions } = useStsQueryParams();
   return (
     <div className="flex flex-col space-y-4">
       <PopupButton
-        buttonIcon={<PencilIcon />}
-        buttonText={
-          <span>Test Call Guideline {instructions && <span className="text-green-spring">*</span>}</span>
-        }
+        className="flex items-center gap-2 p-3 text-white hover:bg-gray-800 bg-gray-900/50 border border-gray-700 rounded-lg font-medium"
         popupContent={<InstructionInput className="w-96" focusOnMount />}
-        tooltipText={instructions ? "Using your custom guideline. Click to edit." : null}
-      />
+      >
+        <PencilIcon />
+        <span>Test Call Guideline {instructions && <span className="text-green-spring">*</span>}</span>
+      </PopupButton>
       <UseCaseButtons />
     </div>
   );
@@ -47,6 +47,8 @@ export default function Home() {
   const { messages, status } = useVoiceBot();
   const { rateLimited } = useDeepgram();
   const [conversationOpen, setConversationOpen] = useState(false);
+  const pathname = usePathname();
+  const isVoiceAgent = pathname === '/';
 
   const toggleConversation = () => setConversationOpen(!conversationOpen);
 
@@ -72,9 +74,11 @@ export default function Home() {
                   />
                 </Suspense>
                 {/* Desktop Menu Items - Positioned higher */}
-                <div className="hidden md:flex absolute left-8 top-1/3 -translate-y-1/2">
-                  <DesktopMenuItems />
-                </div>
+                {isVoiceAgent && (
+                  <div className="hidden md:flex absolute left-8 top-1/3 -translate-y-1/2">
+                    <DesktopMenuItems />
+                  </div>
+                )}
                 {/* Desktop Conversation Toggle */}
                 {has4ConversationMessages ? (
                   <div className="hidden md:flex justify-center mt-auto mb-4 md:mt-4 text-gray-350">

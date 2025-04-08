@@ -63,10 +63,10 @@ const UseCaseButtons: FC = () => {
         <button
           key={useCase.name}
           onClick={() => handleUseCaseClick(useCase.instructions)}
-          className="flex items-center gap-2 p-2 text-sm text-gray-350 hover:text-gray-25 hover:bg-gray-800 rounded-lg transition-colors"
+          className="flex items-center gap-2 p-3 text-sm text-white hover:text-white hover:bg-gray-800 rounded-lg transition-colors bg-gray-900/50 backdrop-blur-sm border border-gray-800"
         >
           <span className="text-lg">{useCase.icon}</span>
-          <span>{useCase.name}</span>
+          <span className="font-medium">{useCase.name}</span>
         </button>
       ))}
     </div>

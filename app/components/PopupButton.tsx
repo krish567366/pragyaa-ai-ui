@@ -1,47 +1,28 @@
-import { useState, type ReactNode } from "react";
-import PopupBody from "app/components/PopupBody";
-import { XMarkIcon } from "app/components/icons/XMarkIcon.js";
+import { type FC, useState } from "react";
+import { Tooltip } from "app/components/Tooltip";
 
-type Props = {
-  buttonIcon: ReactNode;
-  buttonText: ReactNode;
-  popupContent: ReactNode;
-  tooltipText?: string | null;
-};
+interface Props {
+  children: React.ReactNode;
+  popupContent: React.ReactNode;
+  className?: string;
+}
 
-const PopupButton = ({ buttonIcon, buttonText, popupContent, tooltipText }: Props) => {
+export const PopupButton: FC<Props> = ({ children, popupContent, className = "" }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="relative max-w-max text-gray-350">
+    <div className="relative">
       <button
-        className={`flex peer items-center gap-2 hover:text-gray-25 ${isOpen ? "pointer-events-none" : ""}`}
-        onClick={() => setIsOpen(true)}
+        onClick={() => setIsOpen(!isOpen)}
+        className={`relative ${className}`}
       >
-        {buttonIcon}
-        {buttonText}
+        {children}
       </button>
-      {tooltipText && (
-        <div className="absolute w-max z-10 top-7 left-8 p-4 text-base text-gray-25 hidden peer-hover:flex bg-gray-850 border border-solid border-gray-800 rounded-sm">
-          {tooltipText}
-        </div>
-      )}
       {isOpen && (
-        <PopupBody onExit={() => setIsOpen(false)}>
-          <div className="absolute w-max top-0 left-full ml-4 p-6 border border-gray-700 rounded-lg bg-gray-850">
-            <button
-              aria-label="Close"
-              className="absolute top-6 right-6 leading-none text-xl flex hover:text-gray-25"
-              onClick={() => setIsOpen(false)}
-            >
-              <XMarkIcon />
-            </button>
-            {popupContent}
-          </div>
-        </PopupBody>
+        <div className="absolute left-full ml-2 top-0">
+          <Tooltip>{popupContent}</Tooltip>
+        </div>
       )}
     </div>
   );
 };
-
-export default PopupButton;
