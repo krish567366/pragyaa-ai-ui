@@ -1,8 +1,8 @@
-# Deepgram Voicebot
+# Pragyaa Voice Agent Demo
 
 [![Discord](https://dcbadge.vercel.app/api/server/xWRaCDBtW4?style=flat)](https://discord.gg/xWRaCDBtW4)
 
-A demo is live at https://deepgram.com/agent
+A demo is live at https://pragyaa.com/agent
 
 Table of contents:
 

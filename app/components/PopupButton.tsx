@@ -28,7 +28,7 @@ const PopupButton = ({ buttonIcon, buttonText, popupContent, tooltipText }: Prop
       )}
       {isOpen && (
         <PopupBody onExit={() => setIsOpen(false)}>
-          <div className="absolute w-max bottom-0 left-full ml-4 p-6 border border-gray-700 rounded-lg bg-gray-850">
+          <div className="absolute w-max top-0 left-full ml-4 p-6 border border-gray-700 rounded-lg bg-gray-850">
             <button
               aria-label="Close"
               className="absolute top-6 right-6 leading-none text-xl flex hover:text-gray-25"

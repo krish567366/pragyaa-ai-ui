@@ -1,7 +1,7 @@
 import { availableVoices } from "app/lib/constants";
 import type { Voice } from "../../utils/deepgramUtils";
 import Image from "next/image";
-import { useEffect, useState, type FC, type MouseEventHandler } from "react";
+import { useEffect, useState, useRef, type FC, type MouseEventHandler } from "react";
 import styles from "./VoiceSelector.module.scss";
 import { useStsQueryParams } from "app/hooks/UseStsQueryParams";
 
@@ -13,40 +13,58 @@ interface Props {
   collapsible?: boolean;
 }
 
-const VoiceSelector: FC<Props> = ({ className = "", showLabel, collapsible }) => {
+const VoiceSelector: FC<Props> = ({ className = "", showLabel, collapsible = false }) => {
   const { voice, updateVoiceUrlParam } = useStsQueryParams();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [sortedVoices, setSortedVoices] = useState<Voice[]>(availableVoices);
+  const isMounted = useRef(true);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   const handleVoiceIconClick: MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault();
+    const newVoice = e.currentTarget.value;
+    
     if (collapsible && !isOpen) {
       setIsOpen(true);
-    } else {
-      if (collapsible) {
-        setIsOpen(false);
-      }
+    } else if (collapsible) {
+      setIsOpen(false);
     }
-    updateVoiceUrlParam(e.currentTarget.value);
+    
+    if (newVoice) {
+      updateVoiceUrlParam(newVoice);
+    }
   };
 
   useEffect(() => {
-    if (!isOpen && collapsible && voice !== sortedVoices[0]?.canonical_name) {
+    if (!isOpen && collapsible && voice && voice !== sortedVoices[0]?.canonical_name) {
       const selectedVoiceIndex = availableVoices.findIndex((v) => v.canonical_name === voice);
-      const selectedVoice = availableVoices[selectedVoiceIndex];
-      const sorted = [...availableVoices];
-      if (selectedVoiceIndex >= 0 && selectedVoice) {
+      if (selectedVoiceIndex >= 0) {
+        const selectedVoice = availableVoices[selectedVoiceIndex];
+        if (!selectedVoice) return;
+        
+        const sorted = [...availableVoices];
         sorted.splice(selectedVoiceIndex, 1);
         sorted.unshift(selectedVoice);
-      }
 
-      // Rearrange the voices AFTER the transition duration is over to prevent jumpiness
-      setTimeout(() => {
-        setSortedVoices(sorted);
-      }, ANIMATION_DURATION);
+        setTimeout(() => {
+          if (isMounted.current) {
+            setSortedVoices(sorted);
+          }
+        }, ANIMATION_DURATION);
+      }
     }
   }, [voice, collapsible, isOpen, sortedVoices]);
 
-  const isSelected = (v: Voice) => voice === v.canonical_name;
+  const isSelected = (v: Voice): boolean => {
+    if (!voice) return false;
+    return voice === v.canonical_name;
+  };
 
   const voicesListClassName = [
     styles["voice-list"],
@@ -72,14 +90,18 @@ const VoiceSelector: FC<Props> = ({ className = "", showLabel, collapsible }) =>
     ? `bg-gradient-to-t ${isOpen ? "from-black w-full" : "from-transparent"} from-80% to-transparent`
     : "";
 
+  if (!voice || !sortedVoices.length) {
+    return null;
+  }
+
   return (
     <div className={`${className} ${collapsedBackgroundClassName}`}>
       {showLabel && <div className="text-gray-450 text-sm mr-2">Voices:</div>}
       <ul className={voicesListClassName}>
-        {sortedVoices.map((voice, i) => (
+        {sortedVoices.map((voiceItem, i) => (
           <li
-            className={voiceListItemClassName(voice)}
-            key={voice.name}
+            className={voiceListItemClassName(voiceItem)}
+            key={voiceItem.canonical_name}
             style={
               collapsible && isOpen
                 ? {
@@ -91,19 +113,18 @@ const VoiceSelector: FC<Props> = ({ className = "", showLabel, collapsible }) =>
             <button
               className={styles["voice-list__icon"]}
               onClick={handleVoiceIconClick}
-              value={voice.canonical_name}
+              value={voiceItem.canonical_name}
               style={
-                // Border is hidden for unselected hidden voices to prevent the border height from impacting the close/open transitions
-                !collapsible || isOpen || isSelected(voice)
+                (!collapsible || isOpen || isSelected(voiceItem))
                   ? {
-                      border: `2px solid ${voice.metadata.color}`,
+                      border: `2px solid ${voiceItem.metadata.color}`,
                     }
                   : {}
               }
             >
               <Image
-                src={voice.metadata.image}
-                alt={voice.name}
+                src={voiceItem.metadata.image}
+                alt={voiceItem.name}
                 width={80}
                 height={80}
                 className="rounded-full object-scale-down"
@@ -112,14 +133,14 @@ const VoiceSelector: FC<Props> = ({ className = "", showLabel, collapsible }) =>
             </button>
 
             <div className={styles["voice-list__info"]}>
-              <span className="capitalize font-semibold md:font-normal text-gray-200 md:text-gray-25">
-                {voice.name}
-                <span className="hidden md:inline">.</span>{" "}
-              </span>
-              <span className="whitespace-nowrap text-gray-450 md:text-gray-25">
-                <span className="capitalize">{voice.metadata.accent}</span>{" "}
-                <span className="lowercase">{voice.metadata.gender}</span>
-              </span>
+              <div className="flex flex-col items-start">
+                <span className="text-lg font-semibold text-white">
+                  {voiceItem.name}.
+                </span>
+                <span className="text-sm text-gray-400">
+                  {voiceItem.metadata.accent} {voiceItem.metadata.gender.toLowerCase()}
+                </span>
+              </div>
             </div>
           </li>
         ))}

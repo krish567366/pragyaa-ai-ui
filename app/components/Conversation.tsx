@@ -1,11 +1,14 @@
 import React, { useRef, useLayoutEffect, type FC } from "react";
-import {
-  isConversationMessage,
+import { useVoiceBot } from '../context/VoiceBotContextProvider';
+import { 
+  isConversationMessage, 
   isUserMessage,
-  useVoiceBot,
+  isAssistantMessage,
   type ConversationMessage,
   type LatencyMessage,
-} from "../context/VoiceBotContextProvider";
+  type UserMessage,
+  type AssistantMessage
+} from '../types/voicebot';
 import { UserIcon } from "./icons/UserIcon";
 import { AssistantIcon } from "./icons/AssistantIcon";
 import { XMarkIcon } from "./icons/XMarkIcon";
@@ -62,22 +65,25 @@ const isFirstMessageInSpeakerSequence = (
 
 interface Props {
   toggleConversation: () => void;
+  className?: string;
 }
 
-function Conversation({ toggleConversation }: Props) {
-  const { displayOrder } = useVoiceBot();
-  const scrollRef = useRef<HTMLDivElement>(null);
+export const Conversation: FC<Props> = ({ toggleConversation, className = "" }) => {
+  const { messages } = useVoiceBot();
+  const containerRef = useRef<HTMLDivElement>(null);
   const searchParams = useSearchParams();
 
   useLayoutEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    if (containerRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
-  }, [displayOrder]);
+  }, [messages]);
+
+  const conversationMessages = messages.filter(isConversationMessage);
 
   return (
     <div
-      className="absolute top-[250px] bottom-[0] left-0 md:left-[20%] w-[100%] md:w-[60%] pt-4 z-10 border border-gray-800 rounded-[1px]"
+      className={`absolute top-[250px] bottom-[0] left-0 md:left-[20%] w-[100%] md:w-[60%] pt-4 z-10 border border-gray-800 rounded-[1px] ${className}`}
       style={{
         background: "linear-gradient(0deg, #16161A 47.8%, #25252B 99.86%)",
       }}
@@ -94,29 +100,45 @@ function Conversation({ toggleConversation }: Props) {
           Conversation transcript:
         </div>
 
-        <div ref={scrollRef} className="scrollbar flex flex-col items-center pb-4 overflow-auto">
+        <div ref={containerRef} className="scrollbar flex flex-col items-center pb-4 overflow-auto">
           <div className="px-4 max-w-xl">
-            {displayOrder.map((message, index) =>
-              isConversationMessage(message) ? (
-                <ConversationMessageDisplay
-                  message={message}
-                  firstInSequence={isFirstMessageInSpeakerSequence(
-                    message,
-                    displayOrder.filter(isConversationMessage),
-                  )}
-                  key={index}
-                />
-              ) : (
-                searchParams.get(latencyMeasurementQueryParam) && (
+            {conversationMessages.map((message, index) => {
+              if (isUserMessage(message)) {
+                return (
+                  <ConversationMessageDisplay
+                    message={message}
+                    firstInSequence={isFirstMessageInSpeakerSequence(
+                      message,
+                      conversationMessages.filter(isConversationMessage),
+                    )}
+                    key={index}
+                  />
+                );
+              }
+              if (isAssistantMessage(message)) {
+                return (
+                  <ConversationMessageDisplay
+                    message={message}
+                    firstInSequence={isFirstMessageInSpeakerSequence(
+                      message,
+                      conversationMessages.filter(isConversationMessage),
+                    )}
+                    key={index}
+                  />
+                );
+              }
+              if (searchParams.get(latencyMeasurementQueryParam)) {
+                return (
                   <LatencyMessageDisplay message={message} key={index} />
-                )
-              ),
-            )}
+                );
+              }
+              return null;
+            })}
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default Conversation;

@@ -46,9 +46,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         <AnimatedBackground>
           <VoiceBotProvider>
-            <MicrophoneContextProvider>
-              <DeepgramContextProvider>{children}</DeepgramContextProvider>
-            </MicrophoneContextProvider>
+            <DeepgramContextProvider>
+              <MicrophoneContextProvider>{children}</MicrophoneContextProvider>
+            </DeepgramContextProvider>
           </VoiceBotProvider>
         </AnimatedBackground>
       </body>

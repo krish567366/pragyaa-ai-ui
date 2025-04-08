@@ -1,4 +1,5 @@
 import type { FC } from 'react';
+import Image from 'next/image';
 
 const LandingSections: FC = () => {
   return (
@@ -15,12 +16,12 @@ const LandingSections: FC = () => {
               <p className="text-gray-400">Engage in fluid, context-aware conversations with advanced AI understanding.</p>
             </div>
             <div className="bg-gray-900 p-8 rounded-xl">
-              <h3 className="text-2xl font-bold mb-4">Multiple Voices</h3>
-              <p className="text-gray-400">Choose from a variety of natural-sounding voices to personalize your experience.</p>
+              <h3 className="text-2xl font-bold mb-4">Multiple Voices & Multi-lingual</h3>
+              <p className="text-gray-400">Choose from a variety of natural-sounding voices to personalize your experience. Multi-lingual Support.</p>
             </div>
             <div className="bg-gray-900 p-8 rounded-xl">
               <h3 className="text-2xl font-bold mb-4">Real-time Response</h3>
-              <p className="text-gray-400">Experience lightning-fast responses with minimal latency.</p>
+              <p className="text-gray-400">Experience lightning-fast responses with minimal latency. Support for seamless Interuptions mid-sentence.</p>
             </div>
           </div>
         </div>
@@ -52,15 +53,23 @@ const LandingSections: FC = () => {
                   <div className="relative z-10">
                     <h3 className="text-2xl font-bold mb-4">Quick Setup</h3>
                     <p className="text-gray-400">
-                      Get started instantly - no account required. Just click the orb and start speaking with your AI assistant.
+                      Get started instantly. Just add your custom call guideline, click the orb and start speaking with your VoiceAgent.
                     </p>
                   </div>
                 </div>
               </div>
               <div className="w-full md:w-1/2 flex justify-center">
                 <div className="bg-gray-800 rounded-2xl p-6 w-full max-w-md">
-                  <div className="aspect-video rounded-lg bg-gray-700 flex items-center justify-center">
-                    <span className="text-4xl">🎯</span>
+                  <div className="aspect-video rounded-lg bg-gray-700 flex items-center justify-center overflow-hidden">
+                    <Image
+                      src="/VoiceAgent_1.png"
+                      alt="Quick Setup"
+                      width={400}
+                      height={225}
+                      priority
+                      unoptimized
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 </div>
               </div>
@@ -83,8 +92,16 @@ const LandingSections: FC = () => {
               </div>
               <div className="w-full md:w-1/2 flex justify-center">
                 <div className="bg-gray-800 rounded-2xl p-6 w-full max-w-md">
-                  <div className="aspect-video rounded-lg bg-gray-700 flex items-center justify-center">
-                    <span className="text-4xl">🎤</span>
+                  <div className="aspect-video rounded-lg bg-gray-700 flex items-center justify-center overflow-hidden">
+                    <Image
+                      src="/VoiceAgent_2.png"
+                      alt="Choose Your Voice"
+                      width={400}
+                      height={225}
+                      priority
+                      unoptimized
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 </div>
               </div>
@@ -107,8 +124,16 @@ const LandingSections: FC = () => {
               </div>
               <div className="w-full md:w-1/2 flex justify-center">
                 <div className="bg-gray-800 rounded-2xl p-6 w-full max-w-md">
-                  <div className="aspect-video rounded-lg bg-gray-700 flex items-center justify-center">
-                    <span className="text-4xl">💬</span>
+                  <div className="aspect-video rounded-lg bg-gray-700 flex items-center justify-center overflow-hidden">
+                    <Image
+                      src="/VoiceAgent_3.png"
+                      alt="Start Speaking"
+                      width={400}
+                      height={225}
+                      priority
+                      unoptimized
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 </div>
               </div>
@@ -131,8 +156,16 @@ const LandingSections: FC = () => {
               </div>
               <div className="w-full md:w-1/2 flex justify-center">
                 <div className="bg-gray-800 rounded-2xl p-6 w-full max-w-md">
-                  <div className="aspect-video rounded-lg bg-gray-700 flex items-center justify-center">
-                    <span className="text-4xl">🤖</span>
+                  <div className="aspect-video rounded-lg bg-gray-700 flex items-center justify-center overflow-hidden">
+                    <Image
+                      src="/VoiceAgent_4.png"
+                      alt="Get Smart Responses"
+                      width={400}
+                      height={225}
+                      priority
+                      unoptimized
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 </div>
               </div>
@@ -148,15 +181,23 @@ const LandingSections: FC = () => {
                   <div className="relative z-10">
                     <h3 className="text-2xl font-bold mb-4">Customize & Extend</h3>
                     <p className="text-gray-400">
-                      Adjust settings, customize prompts, and extend functionality to match your specific needs.
+                      Connect with us to customize your VocieAgent, extend functionality to match your specific needs.
                     </p>
                   </div>
                 </div>
               </div>
               <div className="w-full md:w-1/2 flex justify-center">
                 <div className="bg-gray-800 rounded-2xl p-6 w-full max-w-md">
-                  <div className="aspect-video rounded-lg bg-gray-700 flex items-center justify-center">
-                    <span className="text-4xl">⚙️</span>
+                  <div className="aspect-video rounded-lg bg-gray-700 flex items-center justify-center overflow-hidden">
+                    <Image
+                      src="/VoiceAgent_5.png"
+                      alt="Customize & Extend"
+                      width={400}
+                      height={225}
+                      priority
+                      unoptimized
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 </div>
               </div>
@@ -322,6 +363,116 @@ const LandingSections: FC = () => {
             <div className="bg-black p-6 rounded-xl">
               <h3 className="text-xl font-bold mb-2">Can I change the voice?</h3>
               <p className="text-gray-400">Yes! You can choose from multiple voice options including Asteria, Orion, Luna, and Arcas.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* VoiceLens Section */}
+      <section className="py-20 bg-purple-700">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto text-center mb-16">
+            <h2 className="text-4xl md:text-6xl font-bold mb-6">
+              VoiceLens
+            </h2>
+            <h3 className="text-2xl md:text-3xl mb-6">
+              Voice Analytics With Generative AI
+            </h3>
+            <p className="text-gray-100 text-lg mb-8">
+              Unlock real value of Enterprise Voice data with rich visual analytics via Post and Live Call Analytics.
+              Plug-&-Play, Highly Configurable and multi-level dashboards to uncover key insights.
+            </p>
+          </div>
+
+          {/* VoiceLens Variants */}
+          <div className="grid md:grid-cols-3 gap-8 mb-16">
+            <div className="bg-gray-900/30 p-8 rounded-xl backdrop-blur-sm">
+              <h3 className="text-2xl font-bold mb-4">VoiceLens OneView</h3>
+              <p className="text-gray-200">Comprehensive single-view analytics dashboard for quick insights.</p>
+            </div>
+            <div className="bg-gray-900/30 p-8 rounded-xl backdrop-blur-sm">
+              <h3 className="text-2xl font-bold mb-4">VoiceLens Live</h3>
+              <p className="text-gray-200">Real-time analytics and monitoring for ongoing calls.</p>
+            </div>
+            <div className="bg-gray-900/30 p-8 rounded-xl backdrop-blur-sm">
+              <h3 className="text-2xl font-bold mb-4">VoiceLens Post Call</h3>
+              <p className="text-gray-200">Detailed post-call analysis with AI-powered insights.</p>
+            </div>
+          </div>
+
+          {/* Custom Analytics Features */}
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <h3 className="text-2xl md:text-3xl font-bold mb-8">
+                Voice Analytics that work for you
+              </h3>
+              <ul className="space-y-4">
+                <li className="flex items-start">
+                  <span className="text-blue-300 mr-2">→</span>
+                  <p>Evaluate for your specific set of metrics for customer interaction</p>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-blue-300 mr-2">→</span>
+                  <p>Evaluate for Product offered vs customer profile data points like Salary, Corporate, Age</p>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-blue-300 mr-2">→</span>
+                  <p>Evaluate for documented product features vs features offered</p>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-blue-300 mr-2">→</span>
+                  <p>Evaluate for Disposition: Next action for customer as per the call vs Agent entry in CRM</p>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-blue-300 mr-2">→</span>
+                  <p>Evaluate for your set of Soft Skills: Empathy, Politeness, Listening to customer and more</p>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-blue-300 mr-2">→</span>
+                  <p>Build and deploy any other custom metrics on the fly</p>
+                </li>
+              </ul>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white/10 p-4 rounded-xl backdrop-blur-sm">
+                <Image
+                  src="/images/voicelens/analytics-1.png"
+                  alt="Analytics Dashboard"
+                  width={300}
+                  height={200}
+                  className="w-full rounded-lg"
+                />
+              </div>
+              <div className="bg-white/10 p-4 rounded-xl backdrop-blur-sm">
+                <Image
+                  src="/images/voicelens/analytics-2.png"
+                  alt="Custom Metrics"
+                  width={300}
+                  height={200}
+                  className="w-full rounded-lg"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Generative AI Features */}
+          <div className="mt-20 text-center">
+            <h3 className="text-2xl md:text-3xl font-bold mb-8">
+              Uses Generative AI for call summarization, identify reasons, sentiments, custom entities
+            </h3>
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="bg-gray-900/30 p-6 rounded-xl backdrop-blur-sm">
+                <h4 className="text-xl font-semibold mb-4">Smart Summarization</h4>
+                <p className="text-gray-200">AI-powered call summaries highlighting key points and actions</p>
+              </div>
+              <div className="bg-gray-900/30 p-6 rounded-xl backdrop-blur-sm">
+                <h4 className="text-xl font-semibold mb-4">Sentiment Analysis</h4>
+                <p className="text-gray-200">Deep understanding of customer and agent sentiments throughout the call</p>
+              </div>
+              <div className="bg-gray-900/30 p-6 rounded-xl backdrop-blur-sm">
+                <h4 className="text-xl font-semibold mb-4">Custom Entity Recognition</h4>
+                <p className="text-gray-200">Identify and track business-specific entities and metrics</p>
+              </div>
             </div>
           </div>
         </div>

@@ -1,5 +1,5 @@
 {
-  "name": "deepgram-voicebot",
+  "name": "pragyaa-voice-agent-demo-main",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -13,12 +13,14 @@
     "@deepgram/sdk": "^3.5.1",
     "@lottiefiles/react-lottie-player": "^3.5.3",
     "@react-hook/resize-observer": "^2.0.2",
+    "@swc/helpers": "^0.5.15",
     "@uidotdev/usehooks": "^2.4.1",
-    "next": "14.2.18",
-    "react": "^18",
+    "next": "^14.2.18",
+    "react": "^19.1.0",
     "react-device-detect": "^2.2.3",
-    "react-dom": "^18",
-    "sass": "^1.77.8"
+    "react-dom": "^19.1.0",
+    "sass": "^1.77.8",
+    "whatwg-url": "^14.2.0"
   },
   "devDependencies": {
     "@types/node": "20.14.10",

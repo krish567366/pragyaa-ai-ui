@@ -1,5 +1,6 @@
 import { type FC, type MutableRefObject, useRef, useEffect } from "react";
-import { useVoiceBot, VoiceBotStatus } from "../context/VoiceBotContextProvider";
+import { useVoiceBot } from '../context/VoiceBotContextProvider';
+import { VoiceBotStatus } from '../types/voicebot';
 
 const PULSE_PERIOD_SECONDS = 3;
 const PULSE_SIZE_MULTIPLIER = 1.02;
