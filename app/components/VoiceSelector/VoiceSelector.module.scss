@@ -25,7 +25,7 @@
         }
 
         .voice-list__info {
-          @apply flex opacity-100;
+          @apply opacity-100;
         }
       }
 
@@ -34,14 +34,10 @@
           @apply scale-75 opacity-50 hover:scale-90 hover:opacity-80;
         }
 
-        .voice-list__info {
-          @apply opacity-0 group-hover:opacity-100;
-        }
-      }
-
-      &:hover {
-        .voice-list__info {
-          @apply flex opacity-100;
+        &:hover {
+          .voice-list__info {
+            @apply opacity-100;
+          }
         }
       }
     }
@@ -51,10 +47,10 @@
     }
 
     &__info {
-      @apply absolute left-full top-1/2 -translate-y-1/2 ml-4 min-w-[200px]
+      @apply absolute left-1/2 -translate-x-1/2 top-14 min-w-[160px]
              bg-gray-900/95 backdrop-blur-sm border border-gray-800 
              rounded-lg p-3 transition-all duration-200
-             opacity-0 hover:opacity-100 z-10;
+             opacity-0 z-10;
     }
   }
 }

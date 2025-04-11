@@ -1,7 +1,26 @@
+'use client';
+
 import Image from 'next/image';
 import type { FC } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 const AnimatedPragyaaRocket: FC = () => {
+  const [isMounted, setIsMounted] = useState(false);
+  const [imageError, setImageError] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    return () => setIsMounted(false);
+  }, []);
+
+  const handleImageError = useCallback(() => {
+    setImageError(true);
+  }, []);
+
+  if (!isMounted) {
+    return null;
+  }
+
   return (
     <div className="relative w-full h-full">
       {/* Particle effects - Positioned behind the rocket */}
@@ -24,14 +43,22 @@ const AnimatedPragyaaRocket: FC = () => {
 
       {/* Main rocket image with floating animation */}
       <div className="relative w-full h-full animate-float z-10">
-        <Image
-          src="https://pragyaa.ai/wp-content/uploads/2020/04/rocket-600x588.png"
-          alt="Pragyaa Rocket"
-          width={600}
-          height={588}
-          className="object-contain relative z-10"
-          priority
-        />
+        {!imageError ? (
+          <Image
+            src="/images/rocket.png"
+            alt="Pragyaa Rocket"
+            width={600}
+            height={588}
+            className="object-contain relative z-10"
+            priority
+            loading="eager"
+            onError={handleImageError}
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <div className="text-white">Loading rocket...</div>
+          </div>
+        )}
       </div>
       
       {/* Background glow effect */}

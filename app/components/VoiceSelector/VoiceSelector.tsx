@@ -133,9 +133,9 @@ const VoiceSelector: FC<Props> = ({ className = "", showLabel, collapsible = fal
             </button>
 
             <div className={styles["voice-list__info"]}>
-              <div className="flex flex-col items-start">
+              <div className="flex flex-col items-center">
                 <span className="text-lg font-semibold text-white">
-                  {voiceItem.name}.
+                  {voiceItem.name}
                 </span>
                 <span className="text-sm text-gray-400">
                   {voiceItem.metadata.accent} {voiceItem.metadata.gender.toLowerCase()}

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="600" viewBox="0 0 1200 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="600" fill="#0F172A"/>
+  
+  <!-- Title Section -->
+  <g transform="translate(80, 80)">
+    <!-- Background Number -->
+    <text x="0" y="80" font-family="Inter, system-ui" font-size="180" font-weight="600" fill="#312E81" opacity="0.2">03</text>
+    
+    <!-- Title -->
+    <text x="0" y="0" font-family="Inter, system-ui" font-size="48" font-weight="600" fill="white">Custom Entity Recognition</text>
+    
+    <!-- Subtitle -->
+    <text x="0" y="40" font-family="Inter, system-ui" font-size="20" fill="#94A3B8">Identify and extract business-specific information and metrics</text>
+  </g>
+
+  <!-- Main Content Area -->
+  <g transform="translate(80, 200)">
+    <!-- Content Container -->
+    <rect x="0" y="0" width="1040" height="320" rx="12" fill="#1E293B"/>
+    
+    <!-- Inner Content Area -->
+    <g transform="translate(40, 40)">
+      <!-- Header Section -->
+      <rect x="0" y="0" width="280" height="24" rx="4" fill="#7C3AED" opacity="0.9"/>
+      <text x="16" y="17" font-family="Inter, system-ui" font-size="14" font-weight="500" fill="white">Custom Entity Recognition Output</text>
+
+      <!-- Left Column -->
+      <g transform="translate(0, 60)">
+        <text x="0" y="0" font-family="Inter, system-ui" font-size="14" font-weight="500" fill="#E2E8F0">Identified Entities:</text>
+        
+        <!-- Entity Tags -->
+        <g transform="translate(0, 20)">
+          <rect x="0" y="0" width="200" height="24" rx="12" fill="#7C3AED" opacity="0.1"/>
+          <text x="12" y="16" font-family="Inter, system-ui" font-size="12" fill="#E2E8F0">Customer Name: </text>
+          <text x="100" y="16" font-family="Inter, system-ui" font-size="12" fill="#7C3AED">Jane Smith</text>
+        </g>
+        
+        <g transform="translate(0, 50)">
+          <rect x="0" y="0" width="200" height="24" rx="12" fill="#7C3AED" opacity="0.1"/>
+          <text x="12" y="16" font-family="Inter, system-ui" font-size="12" fill="#E2E8F0">Product ID: </text>
+          <text x="85" y="16" font-family="Inter, system-ui" font-size="12" fill="#7C3AED">PRD-12345</text>
+        </g>
+        
+        <g transform="translate(0, 80)">
+          <rect x="0" y="0" width="200" height="24" rx="12" fill="#7C3AED" opacity="0.1"/>
+          <text x="12" y="16" font-family="Inter, system-ui" font-size="12" fill="#E2E8F0">Transaction Value: </text>
+          <text x="110" y="16" font-family="Inter, system-ui" font-size="12" fill="#7C3AED">$2,000</text>
+        </g>
+      </g>
+
+      <!-- Right Column -->
+      <g transform="translate(280, 60)">
+        <text x="0" y="0" font-family="Inter, system-ui" font-size="14" font-weight="500" fill="#E2E8F0">Key Details:</text>
+        
+        <!-- Details -->
+        <g transform="translate(0, 20)">
+          <rect x="0" y="0" width="200" height="24" rx="12" fill="#7C3AED" opacity="0.1"/>
+          <text x="12" y="16" font-family="Inter, system-ui" font-size="12" fill="#E2E8F0">Invoice Number: </text>
+          <text x="105" y="16" font-family="Inter, system-ui" font-size="12" fill="#7C3AED">INV-98765</text>
+        </g>
+        
+        <g transform="translate(0, 50)">
+          <rect x="0" y="0" width="200" height="24" rx="12" fill="#7C3AED" opacity="0.1"/>
+          <text x="12" y="16" font-family="Inter, system-ui" font-size="12" fill="#E2E8F0">Payment Terms: </text>
+          <text x="105" y="16" font-family="Inter, system-ui" font-size="12" fill="#7C3AED">Net 30</text>
+        </g>
+      </g>
+
+      <!-- Usage Section -->
+      <g transform="translate(0, 200)">
+        <text x="0" y="0" font-family="Inter, system-ui" font-size="14" font-weight="500" fill="#E2E8F0">Usage:</text>
+        
+        <!-- Usage Points -->
+        <g transform="translate(0, 20)">
+          <circle cx="6" cy="6" r="3" fill="#7C3AED"/>
+          <text x="24" y="10" font-family="Inter, system-ui" font-size="12" fill="#E2E8F0">Automatically tag and categorize critical business data (e.g., product details, transaction amounts).</text>
+        </g>
+        
+        <g transform="translate(0, 40)">
+          <circle cx="6" cy="6" r="3" fill="#7C3AED"/>
+          <text x="24" y="10" font-family="Inter, system-ui" font-size="12" fill="#E2E8F0">Integrate with existing CRM systems for real-time updates and quick retrieval of entity-specific records.</text>
+        </g>
+      </g>
+    </g>
+
+    <!-- Decorative Elements -->
+    <g transform="translate(880, 240)">
+      <!-- Purple Glow -->
+      <circle cx="60" cy="60" r="40" fill="#7C3AED" opacity="0.1"/>
+      <circle cx="60" cy="60" r="30" fill="#7C3AED" opacity="0.15"/>
+      <circle cx="60" cy="60" r="20" fill="#7C3AED" opacity="0.2"/>
+    </g>
+  </g>
+</svg> 
