@@ -146,6 +146,39 @@ export default function Home() {
         </Suspense>
       </div>
       <LandingSections />
+      {/* Footer Section */}
+      <footer className="py-16 bg-gray-900">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col items-center justify-center space-y-8">
+            {/* Logo */}
+            <div className="flex items-center space-x-2">
+              <img 
+                src="/pragyaa_transparent_hor.png" 
+                alt="VoiceAgent Logo" 
+                className="h-8 object-contain"
+              />
+            </div>
+
+            {/* Links */}
+            <div className="flex items-center space-x-8 text-gray-400">
+              <a href="#privacy" className="hover:text-purple-400 transition-colors">
+                Privacy
+              </a>
+              <a href="#terms" className="hover:text-purple-400 transition-colors">
+                Terms
+              </a>
+              <a href="#contact" className="hover:text-purple-400 transition-colors">
+                Contact
+              </a>
+            </div>
+
+            {/* Copyright */}
+            <div className="text-gray-400 text-center">
+              ©2025 Voxot Solutions Pvt Ltd. All Rights Reserved.
+            </div>
+          </div>
+        </div>
+      </footer>
     </main>
   );
 }
