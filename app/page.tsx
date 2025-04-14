@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import ProductNav from './components/ProductNav';
+import AnimatedLogo from './components/AnimatedLogo';
 
 export default function HomePage() {
   return (
@@ -11,20 +12,28 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="relative py-24 overflow-hidden">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col items-center text-center">
-            <h1 className="text-6xl md:text-7xl font-bold mb-8 text-white">
-              Pragyaa <span className="bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">AI</span>
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl">
-              Advanced AI solutions for voice interactions, analytics, and predictive intelligence
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Link href="#products" className="bg-purple-600 text-white px-8 py-3 rounded-lg hover:bg-purple-700 transition-colors">
-                Explore Products
-              </Link>
-              <Link href="#contact" className="border border-purple-600 text-white px-8 py-3 rounded-lg hover:bg-purple-600/10 transition-colors">
-                Contact Us
-              </Link>
+          <div className="flex flex-col md:flex-row items-center justify-between">
+            {/* Left Content */}
+            <div className="w-full md:w-1/2 text-left mb-12 md:mb-0">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 text-white leading-tight">
+                <span className="bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">Voice</span> is the New UI. <span className="bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">Gen AI</span> is the New OS.
+              </h1>
+              <h2 className="text-2xl md:text-3xl text-white mb-8 leading-snug">
+                Welcome to the Future of Enterprise AI
+              </h2>
+              <div className="flex flex-wrap gap-4">
+                <Link href="#products" className="bg-purple-600 text-white px-8 py-3 rounded-lg hover:bg-purple-700 transition-colors">
+                  Explore Products
+                </Link>
+                <Link href="#contact" className="border border-purple-600 text-white px-8 py-3 rounded-lg hover:bg-purple-600/10 transition-colors">
+                  Contact Us
+                </Link>
+              </div>
+            </div>
+            
+            {/* Right Logo */}
+            <div className="w-full md:w-1/2 flex justify-center md:justify-end">
+              <AnimatedLogo />
             </div>
           </div>
         </div>

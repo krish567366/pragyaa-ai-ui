@@ -16,12 +16,13 @@
     "@react-hook/resize-observer": "^2.0.2",
     "@swc/helpers": "^0.5.15",
     "@uidotdev/usehooks": "^2.4.1",
-    "next": "13.5.6",
+    "framer-motion": "^12.7.2",
+    "next": "^13.5.6",
     "picocolors": "^1.1.1",
-    "react": "18.2.0",
+    "react": "^18.2.0",
     "react-device-detect": "^2.2.3",
-    "react-dom": "18.2.0",
-    "sass": "^1.77.8",
+    "react-dom": "^18.2.0",
+    "sass": "^1.86.3",
     "whatwg-url": "^14.2.0"
   },
   "devDependencies": {
@@ -32,7 +33,7 @@
     "eslint": "^8",
     "eslint-config-next": "13.5.6",
     "eslint-config-prettier": "^9.1.0",
-    "postcss": "^8.4.41",
+    "postcss": "^8.5.3",
     "prettier": "^3.3.3",
     "tailwindcss": "^3.4.10",
     "typescript": "5.0.4"
