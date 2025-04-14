@@ -1,33 +1,7 @@
 "use client";
-import { Suspense, useState } from "react";
-import { App } from "./components/App";
-import Intelligence from "./components/Intelligence";
-import { stsConfig } from "./lib/constants";
-import {
-  isConversationMessage,
-  useVoiceBot,
-} from "./context/VoiceBotContextProvider";
-import { VoiceBotStatus } from './types/voicebot';
-import { CaretIcon } from "./components/icons/CaretIcon";
-import { withBasePath } from "./utils/deepgramUtils";
-import PromptSuggestions from "./components/PromptSuggestions";
-import Conversation from "./components/Conversation";
-import VoiceSelector from "./components/VoiceSelector/VoiceSelector";
-import { isMobile } from "react-device-detect";
-import { PopupButton } from "./components/PopupButton";
-import MobileMenu from "./components/MobileMenu";
-import Latency from "./components/Latency";
-import { PencilIcon } from "./components/icons/PencilIcon";
-import InstructionInput from "./components/InstructionInput";
-import Header from "./components/Header";
-import { useStsQueryParams } from "./hooks/UseStsQueryParams";
-import { useDeepgram } from "./context/DeepgramContextProvider";
-import LandingSections from "./components/LandingSections";
-import UseCaseButtons from "./components/UseCaseButtons";
-import ProductNav from './components/ProductNav';
+
 import Link from 'next/link';
-import LogoLink from './components/LogoLink';
-import AnimatedBackground from './components/AnimatedBackground.js';
+import ProductNav from './components/ProductNav';
 
 export default function HomePage() {
   return (

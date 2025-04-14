@@ -7,7 +7,8 @@ import VoiceSelector from './VoiceSelector/VoiceSelector';
 
 export default function ProductNav() {
   const pathname = usePathname();
-  const isVoiceAgent = pathname === '/' || pathname === '/VoiceAgent';
+  const isVoiceAgentPage = pathname === '/VoiceAgent';
+  const isVoiceAgentNav = pathname === '/' || pathname === '/VoiceAgent';
 
   return (
     <div>
@@ -24,7 +25,7 @@ export default function ProductNav() {
               <Link 
                 href="/VoiceAgent"
                 className={`text-lg font-medium transition-colors ${
-                  isVoiceAgent ? 'text-blue-400' : 'text-gray-300 hover:text-blue-300'
+                  isVoiceAgentNav ? 'text-blue-400' : 'text-gray-300 hover:text-blue-300'
                 }`}
               >
                 VoiceAgent
@@ -47,9 +48,9 @@ export default function ProductNav() {
               </Link>
             </div>
             
-            {/* Empty div to maintain layout */}
+            {/* Empty div to maintain layout on non-VoiceAgent pages */}
             <div className="flex-shrink-0 w-[200px] mr-8">
-              {isVoiceAgent && (
+              {isVoiceAgentPage && (
                 <div className="hidden md:block">
                   <VoiceSelector collapsible={false} />
                 </div>
@@ -60,7 +61,7 @@ export default function ProductNav() {
       </nav>
 
       {/* Voice selector below navigation, only shown for VoiceAgent on mobile */}
-      {isVoiceAgent && (
+      {isVoiceAgentPage && (
         <div className="md:hidden w-full bg-black/30 backdrop-blur-sm border-b border-gray-800">
           <div className="flex justify-end items-center h-12 mr-8">
             <VoiceSelector collapsible={false} />
