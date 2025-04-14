@@ -12,28 +12,29 @@
   "dependencies": {
     "@deepgram/sdk": "^3.5.1",
     "@lottiefiles/react-lottie-player": "^3.5.3",
-    "@next/env": "^15.3.0",
+    "@next/env": "^13.5.6",
     "@react-hook/resize-observer": "^2.0.2",
     "@swc/helpers": "^0.5.15",
     "@uidotdev/usehooks": "^2.4.1",
-    "next": "^13.5.6",
-    "react": "^18.2.0",
+    "next": "13.5.6",
+    "picocolors": "^1.1.1",
+    "react": "18.2.0",
     "react-device-detect": "^2.2.3",
-    "react-dom": "^18.2.0",
+    "react-dom": "18.2.0",
     "sass": "^1.77.8",
     "whatwg-url": "^14.2.0"
   },
   "devDependencies": {
     "@types/node": "20.14.10",
-    "@types/react": "18.3.4",
+    "@types/react": "18.2.0",
     "@typescript-eslint/eslint-plugin": "^7.16.0",
     "autoprefixer": "^10.4.20",
     "eslint": "^8",
-    "eslint-config-next": "14.2.6",
+    "eslint-config-next": "13.5.6",
     "eslint-config-prettier": "^9.1.0",
     "postcss": "^8.4.41",
     "prettier": "^3.3.3",
     "tailwindcss": "^3.4.10",
-    "typescript": "5.5.4"
+    "typescript": "5.0.4"
   }
 }

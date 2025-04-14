@@ -1,17 +1,24 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  basePath: "/agent",
+  basePath: "",
   redirects: async () => {
     return [
       {
         source: "/",
-        destination: "/agent",
+        destination: "/VoiceAgent",
         permanent: false,
         basePath: false
       }
     ];
   },
-
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: '/api/:path*',
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {
