@@ -7,7 +7,8 @@ import VoiceSelector from './VoiceSelector/VoiceSelector';
 
 export default function ProductNav() {
   const pathname = usePathname();
-  const isVoiceAgent = pathname === '/';
+  const isVoiceAgentPage = pathname === '/VoiceAgent';
+  const isVoiceAgentNav = pathname === '/' || pathname === '/VoiceAgent';
 
   return (
     <div>
@@ -22,9 +23,9 @@ export default function ProductNav() {
             {/* Navigation links centered */}
             <div className="flex justify-center space-x-8">
               <Link 
-                href="/"
+                href="/VoiceAgent"
                 className={`text-lg font-medium transition-colors ${
-                  isVoiceAgent ? 'text-blue-400' : 'text-gray-300 hover:text-blue-300'
+                  isVoiceAgentNav ? 'text-blue-400' : 'text-gray-300 hover:text-blue-300'
                 }`}
               >
                 VoiceAgent
@@ -37,21 +38,33 @@ export default function ProductNav() {
               >
                 VoiceLens
               </Link>
+              <Link 
+                href="/predictml"
+                className={`text-lg font-medium transition-colors ${
+                  pathname === '/predictml' ? 'text-purple-400' : 'text-gray-300 hover:text-purple-300'
+                }`}
+              >
+                PredictML
+              </Link>
             </div>
             
-            {/* Empty div to maintain layout */}
-            <div className="flex-shrink-0 w-[200px] mr-8" />
+            {/* Empty div to maintain layout on non-VoiceAgent pages */}
+            <div className="flex-shrink-0 w-[200px] mr-8">
+              {isVoiceAgentPage && (
+                <div className="hidden md:block">
+                  <VoiceSelector collapsible={false} />
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </nav>
 
-      {/* Voice selector below navigation, only shown for VoiceAgent */}
-      {isVoiceAgent && (
-        <div className="w-full bg-black/30 backdrop-blur-sm border-b border-gray-800">
+      {/* Voice selector below navigation, only shown for VoiceAgent on mobile */}
+      {isVoiceAgentPage && (
+        <div className="md:hidden w-full bg-black/30 backdrop-blur-sm border-b border-gray-800">
           <div className="flex justify-end items-center h-12 mr-8">
-            <div className="hidden md:block">
-              <VoiceSelector collapsible={false} />
-            </div>
+            <VoiceSelector collapsible={false} />
           </div>
         </div>
       )}

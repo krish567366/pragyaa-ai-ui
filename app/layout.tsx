@@ -1,13 +1,10 @@
 import type { ReactNode } from "react";
 import { Inter, Fira_Code } from "next/font/google";
 import localFont from "next/font/local";
-import { DeepgramContextProvider } from "./context/DeepgramContextProvider";
-import { MicrophoneContextProvider } from "./context/MicrophoneContextProvider";
-import { VoiceBotProvider } from "./context/VoiceBotContextProvider";
-import AnimatedBackground from "./components/AnimatedBackground";
+import { sharedOpenGraphMetadata } from "./lib/constants";
+import Providers from "./components/Providers";
 
 import "./globals.css";
-import { sharedOpenGraphMetadata } from "./lib/constants";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -44,13 +41,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${fonts} font-inter`}>
       <body>
-        <AnimatedBackground>
-          <VoiceBotProvider>
-            <DeepgramContextProvider>
-              <MicrophoneContextProvider>{children}</MicrophoneContextProvider>
-            </DeepgramContextProvider>
-          </VoiceBotProvider>
-        </AnimatedBackground>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

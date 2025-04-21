@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useCallback, useEffect, useState, createContext, useContext, useRef } from 'react';
 import { useDeepgram } from './DeepgramContextProvider';
 
@@ -183,4 +185,5 @@ const MicrophoneContextProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   );
 };
 
+export { MicrophoneContextProvider };
 export default MicrophoneContextProvider; 
