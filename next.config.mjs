@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   basePath: "",
+  output: 'standalone',
   redirects: async () => {
     return [
       {
