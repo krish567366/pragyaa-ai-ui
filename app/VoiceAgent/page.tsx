@@ -9,7 +9,6 @@ import {
 } from "../context/VoiceBotContextProvider";
 import { VoiceBotStatus } from '../types/voicebot';
 import { CaretIcon } from "../components/icons/CaretIcon";
-import { withBasePath } from "../utils/deepgramUtils";
 import PromptSuggestions from "../components/PromptSuggestions";
 import Conversation from "../components/Conversation";
 import VoiceSelector from "../components/VoiceSelector/VoiceSelector";
@@ -19,7 +18,6 @@ import MobileMenu from "../components/MobileMenu";
 import Latency from "../components/Latency";
 import { PencilIcon } from "../components/icons/PencilIcon";
 import InstructionInput from "../components/InstructionInput";
-import Header from "../components/Header";
 import { useStsQueryParams } from "../hooks/UseStsQueryParams";
 import { useDeepgram } from "../context/DeepgramContextProvider";
 import LandingSections from "../components/LandingSections";

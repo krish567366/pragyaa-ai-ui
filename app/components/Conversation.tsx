@@ -6,8 +6,6 @@ import {
   isAssistantMessage,
   type ConversationMessage,
   type LatencyMessage,
-  type UserMessage,
-  type AssistantMessage
 } from '../types/voicebot';
 import { UserIcon } from "./icons/UserIcon";
 import { AssistantIcon } from "./icons/AssistantIcon";
