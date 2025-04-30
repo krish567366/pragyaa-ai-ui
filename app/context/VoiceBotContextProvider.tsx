@@ -4,20 +4,12 @@ import React, {
   createContext,
   useContext,
   useReducer,
-  useMemo,
   useEffect,
   useRef,
-  useCallback,
 } from "react";
 import {
   voiceBotReducer,
   INCREMENT_SLEEP_TIMER,
-  START_SPEAKING,
-  START_LISTENING,
-  START_SLEEPING,
-  ADD_MESSAGE,
-  SET_PARAMS_ON_COPY_URL,
-  ADD_BEHIND_SCENES_EVENT,
 } from "./VoiceBotReducer";
 import type {
   VoiceBotMessage,
@@ -26,10 +18,9 @@ import type {
   UserMessage,
   AssistantMessage,
   VoiceBotState,
-  VoiceBotAction,
   BehindTheScenesEvent,
 } from "../types/voicebot";
-import { VoiceBotStatus, EventType } from '../types/voicebot';
+import { VoiceBotStatus } from '../types/voicebot';
 
 const defaultSleepTimeoutSeconds = 30;
 
@@ -53,8 +44,8 @@ export interface VoiceBotContext extends VoiceBotState {
   addVoicebotMessage: (newMessage: VoiceBotMessage) => void;
   addBehindTheScenesEvent: (data: BehindTheScenesEvent) => void;
   isWaitingForUserVoiceAfterSleep: React.Ref<boolean>;
-  startSpeaking: (wakeFromSleep?: boolean) => void;
-  startListening: (wakeFromSleep?: boolean) => void;
+  startSpeaking: () => void;
+  startListening: () => void;
   startSleeping: () => void;
   toggleSleep: () => void;
   displayOrder: VoiceBotMessage[];
@@ -113,17 +104,17 @@ export function VoiceBotProvider({ children }: Props) {
     dispatch({ type: "start_sleeping" });
   };
 
-  const startSpeaking = (wakeFromSleep = false) => {
+  const startSpeaking = () => {
     dispatch({ type: "start_speaking" });
   };
 
-  const startListening = (wakeFromSleep = false) => {
+  const startListening = () => {
     dispatch({ type: "start_listening" });
   };
 
   const toggleSleep = () => {
     if (state.status === VoiceBotStatus.SLEEPING) {
-      startListening(true);
+      startListening();
     } else {
       startSleeping();
     }

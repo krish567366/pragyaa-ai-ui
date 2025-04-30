@@ -23,20 +23,20 @@ export default function ProductNav() {
             {/* Navigation links centered */}
             <div className="flex justify-center space-x-8">
               <Link 
-                href="/VoiceAgent"
-                className={`text-lg font-medium transition-colors ${
-                  isVoiceAgentNav ? 'text-blue-400' : 'text-gray-300 hover:text-blue-300'
-                }`}
-              >
-                VoiceAgent
-              </Link>
-              <Link 
                 href="/voicelens"
                 className={`text-lg font-medium transition-colors ${
                   pathname === '/voicelens' ? 'text-purple-400' : 'text-gray-300 hover:text-purple-300'
                 }`}
               >
                 VoiceLens
+              </Link>
+              <Link 
+                href="/VoiceAgent"
+                className={`text-lg font-medium transition-colors ${
+                  isVoiceAgentNav ? 'text-blue-400' : 'text-gray-300 hover:text-blue-300'
+                }`}
+              >
+                VoiceAgent
               </Link>
               <Link 
                 href="/predictml"

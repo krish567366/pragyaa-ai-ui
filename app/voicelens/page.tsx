@@ -1,7 +1,6 @@
-import type { FC } from 'react';
 import Image from 'next/image';
 import ProductNav from '../components/ProductNav';
-import AnimatedPragyaaRocket from '../components/AnimatedPragyaaRocket';
+import AnimatedVoiceLensBanner from '../components/AnimatedVoiceLensBanner';
 
 export default function VoiceLens() {
   return (
@@ -13,15 +12,11 @@ export default function VoiceLens() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
             {/* Left Content */}
             <div className="flex-1 max-w-2xl">
-              <div className="text-coral-400 mb-4 font-medium">Imagine the possibilities</div>
               <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-                Transform voice data into{' '}
-                <span className="text-purple-400">
-                  actionable insights
-                </span>
+                Unlock the Superpower of Your Enterprise Voice Data
               </h1>
               <p className="text-lg md:text-xl text-gray-300 mb-8">
-                VoiceLens uses advanced AI to analyze voice conversations, providing deep insights and metrics that drive business decisions.
+                Boost key business outcomes by up to 30% with VoiceLens—groundbreaking AI-powered voice analytics customised specifically for your key metrics.
               </p>
               <button className="bg-gradient-to-r from-purple-500 to-coral-500 text-white px-8 py-3 rounded-lg text-lg font-medium hover:from-purple-600 hover:to-coral-600 transition-all duration-300 shadow-[0_0_15px_rgba(168,85,247,0.5)] hover:shadow-[0_0_20px_rgba(168,85,247,0.6)] border border-purple-400/20">
                 Try VoiceLens
@@ -33,7 +28,7 @@ export default function VoiceLens() {
               <div className="relative w-full h-[400px] md:h-[500px]">
                 <div className="absolute inset-0 bg-gradient-to-tr from-purple-400/20 to-coral-400/20 rounded-2xl"></div>
                 <div className="absolute inset-0 flex items-center justify-center p-12">
-                  <AnimatedPragyaaRocket />
+                  <AnimatedVoiceLensBanner />
                 </div>
               </div>
               {/* Decorative dots */}

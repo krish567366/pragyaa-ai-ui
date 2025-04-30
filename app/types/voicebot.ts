@@ -1,5 +1,3 @@
-import type { VoiceBotContext } from '../context/VoiceBotContextProvider';
-
 export enum VoiceBotStatus {
   NONE = "NONE",
   LISTENING = "LISTENING",
@@ -55,7 +53,7 @@ export type VoiceBotState = {
 
 export type VoiceBotAction = {
   type: string;
-  payload?: any;
+  payload?: unknown;
 };
 
 export const isConversationMessage = (message: VoiceBotMessage): message is ConversationMessage => 
