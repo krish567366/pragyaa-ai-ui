@@ -1,7 +1,9 @@
 import {
   isLatencyMessage,
-  useVoiceBot,
   type LatencyMessage,
+} from "app/types/voicebot";
+import {
+  useVoiceBot,
 } from "app/context/VoiceBotContextProvider";
 import type { FC } from "react";
 import { LightningIcon } from "./icons/LightningIcon";
@@ -29,7 +31,7 @@ const Latency: FC<Props> = ({ className, message }: Props) => {
       Latency:
       {" " +
         formatMs(
-          displayMessage.total_latency || displayMessage.tts_latency + displayMessage.ttt_latency,
+          displayMessage.latency,
         )}
     </div>
   ) : (
