@@ -6,8 +6,10 @@ import { AudioIcon } from "./icons/AudioIcon";
 import { BrainIcon } from "./icons/BrainIcon";
 import {
   EventType,
-  useVoiceBot,
   type BehindTheScenesEvent,
+} from "../types/voicebot";
+import {
+  useVoiceBot,
 } from "../context/VoiceBotContextProvider";
 
 interface BehindTheScenesProps {
