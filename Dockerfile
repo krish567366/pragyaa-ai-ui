@@ -20,6 +20,8 @@ COPY . .
 # Learn more here: https://nextjs.org/telemetry
 ENV NEXT_TELEMETRY_DISABLED 1
 
+# Ensure a clean build by removing previous artifacts
+RUN rm -rf .next
 RUN npm run build
 
 # Production image, copy all the files and run next
