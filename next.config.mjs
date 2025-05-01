@@ -2,16 +2,6 @@
 const nextConfig = {
   basePath: "",
   output: 'standalone',
-  redirects: async () => {
-    return [
-      {
-        source: "/",
-        destination: "/VoiceAgent",
-        permanent: false,
-        basePath: false
-      }
-    ];
-  },
   async rewrites() {
     return [
       {
