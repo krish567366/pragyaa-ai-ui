@@ -24,6 +24,9 @@ ENV NEXT_TELEMETRY_DISABLED 1
 RUN rm -rf .next
 RUN npm run build
 
+# Diagnostic step: List the contents of .next after build
+RUN ls -la /app/.next
+
 # Production image, copy all the files and run next
 FROM base AS runner
 WORKDIR /app
