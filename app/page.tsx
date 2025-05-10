@@ -4,8 +4,26 @@ import Link from 'next/link';
 import ProductNav from './components/ProductNav';
 import AnimatedLogo from './components/AnimatedLogo';
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
 
 export default function HomePage() {
+  const [showCalendly, setShowCalendly] = useState(false);
+
+  useEffect(() => {
+    if (showCalendly) {
+      const calendlyContainer = document.getElementById('calendly-inline-widget');
+      if (calendlyContainer && (window as any).Calendly) {
+        calendlyContainer.innerHTML = '';
+        (window as any).Calendly.initInlineWidget({
+          url: 'https://calendly.com/pragyaa-info/30min',
+          parentElement: calendlyContainer,
+          prefill: {},
+          utm: {}
+        });
+      }
+    }
+  }, [showCalendly]);
+
   return (
     <main className="min-h-screen bg-black">
       <ProductNav />
@@ -44,7 +62,7 @@ export default function HomePage() {
       <section id="products" className="py-24 bg-gray-900">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 text-white">
-            Our AI Solutions
+            Our AI Products
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {/* VoiceAgent */}
@@ -288,9 +306,17 @@ export default function HomePage() {
                 <p className="text-gray-400 mb-6">
                   Interested in seeing our products in action? Schedule a personalized demo with our team.
                 </p>
-                <Link href="#" className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors inline-block">
-                  Book a Demo
-                </Link>
+                {!showCalendly ? (
+                  <button 
+                    type="button"
+                    onClick={() => setShowCalendly(true)}
+                    className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors inline-block"
+                  >
+                    Book a Demo
+                  </button>
+                ) : (
+                  <div id="calendly-inline-widget" style={{ minWidth: '320px', height: '700px' }}></div>
+                )}
               </div>
             </div>
           </div>
