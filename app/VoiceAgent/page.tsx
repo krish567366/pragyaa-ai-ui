@@ -17,166 +17,149 @@ import { PopupButton } from "../components/PopupButton";
 import MobileMenu from "../components/MobileMenu";
 import Latency from "../components/Latency";
 import { PencilIcon } from "../components/icons/PencilIcon";
-import InstructionInput from "../components/InstructionInput";
 import { useStsQueryParams } from "../hooks/UseStsQueryParams";
 import { useDeepgram } from "../context/DeepgramContextProvider";
 import LandingSections from "../components/LandingSections";
-import UseCaseButtons from "../components/UseCaseButtons";
 import ProductNav from '../components/ProductNav';
-import { usePathname } from "next/navigation";
+// import { usePathname, useRouter } from "next/navigation";
+import VoiceAgentHeroBanner from "../components/VoiceAgentHeroBanner";
+import UseCaseSelectorBoxes from "../components/UseCaseSelectorBoxes";
 
-const DesktopMenuItems = () => {
-  const { instructions } = useStsQueryParams();
-  return (
-    <div className="flex flex-col space-y-4">
-      <PopupButton
-        className="flex items-center gap-2 p-3 text-white hover:bg-gray-800 bg-gray-900/50 border border-gray-700 rounded-lg font-medium"
-        popupContent={<InstructionInput className="w-96" focusOnMount />}
-      >
-        <PencilIcon />
-        <span>Test Call Guideline {instructions && <span className="text-green-spring">*</span>}</span>
-      </PopupButton>
-      <UseCaseButtons />
-    </div>
-  );
-};
+interface UseCase {
+  id: string;
+  name: string;
+  icon: React.ReactNode;
+  instructions?: string;
+  isSpecial?: boolean;
+  initialPrompt?: string; 
+}
+
+const CalendarIconPlaceholder = () => <span className="mr-2">📅</span>;
+const BriefcaseIconPlaceholder = () => <span className="mr-2">💼</span>;
+const MoneyBagIconPlaceholder = () => <span className="mr-2">💰</span>;
+const DiningIconPlaceholder = () => <span className="mr-2">🍽️</span>;
+
+const useCaseData: UseCase[] = [
+  {
+    id: "test-call-guideline",
+    name: "Test Call Guideline",
+    icon: <PencilIcon />,
+    isSpecial: true,
+  },
+  {
+    id: "appointment-reconfirmation",
+    name: "Appointment Reconfirmation",
+    icon: <CalendarIconPlaceholder />,
+    initialPrompt: "Your task is to act as a friendly and efficient virtual assistant for a dental clinic. Your goal is to call patients to confirm their upcoming dental appointments. Be polite, clear, and concise. Example: Hello [Patient Name], this is [Your Name] from [Clinic Name] calling to confirm your dental appointment scheduled for [Date] at [Time]. Please say 'confirm' to keep your appointment or 'reschedule' if you need to change it.",
+  },
+  {
+    id: "sales-lead-acquisition",
+    name: "Sales Lead Acquisition",
+    icon: <BriefcaseIconPlaceholder />,
+    initialPrompt: "You are a sales representative for a software company. Your task is to qualify leads that have shown interest in your product. Ask questions to understand their needs, budget, and timeline. Example: Hi [Lead Name], thanks for your interest in our product. To better understand if we're a good fit, could you tell me a bit about the challenges you're looking to solve?",
+  },
+  {
+    id: "debt-recovery",
+    name: "Debt Recovery",
+    icon: <MoneyBagIconPlaceholder />,
+    initialPrompt: "You are a debt recovery agent. Your role is to contact individuals regarding outstanding payments in a firm but respectful manner. Clearly state the purpose of the call, the amount due, and offer available payment options or assistance plans. Example: Hello [Debtor Name], this is [Your Name] from [Agency Name] regarding an outstanding balance of [Amount] for [Service/Product]. We'd like to help you resolve this. Are you in a position to make a payment today, or would you like to discuss payment arrangements?",
+  },
+  {
+    id: "dining-recommendations",
+    name: "Dining Recommendations",
+    icon: <DiningIconPlaceholder />,
+    initialPrompt: "You are a local food expert and virtual concierge. Your goal is to provide personalized dining recommendations. Ask about cuisine preferences, budget, location, and occasion to suggest the best restaurants. Example: Hello! Looking for a great place to eat in [City/Area]? What kind of food are you in the mood for, and what's your approximate budget per person?",
+  },
+];
 
 export default function VoiceAgentPage() {
   const { messages, status } = useVoiceBot();
   const { rateLimited } = useDeepgram();
   const [conversationOpen, setConversationOpen] = useState(false);
-  const pathname = usePathname();
-  const isVoiceAgent = pathname === '/VoiceAgent';
+  // const pathname = usePathname();
+  // const router = useRouter();
+  const { instructions: currentInstructions } = useStsQueryParams();
 
   const toggleConversation = () => setConversationOpen(!conversationOpen);
 
   const has4ConversationMessages = messages.filter(isConversationMessage).length > 3;
 
+  const handleSelectUseCase = (useCase: UseCase) => {
+    // console.log("Selected Use Case:", useCase.name);
+    const params = new URLSearchParams(window.location.search);
+
+    if (useCase.id === 'test-call-guideline') {
+      // console.log("Test Call Guideline selected - specific action needed (e.g., open modal or clear other instructions).");
+      params.delete('instructions');
+    } else if (useCase.initialPrompt) {
+      params.set('instructions', useCase.initialPrompt);
+    } else {
+      params.delete('instructions');
+    }
+
+    // router.push(`${pathname}?${params.toString()}`);
+  };
+
+  const appComponent = (
+    <Suspense>
+      <App
+        defaultStsConfig={stsConfig}
+        className="flex-shrink-0 h-auto items-end"
+        requiresUserActionToInitialize={true}
+      />
+    </Suspense>
+  );
+
   return (
     <main className="min-h-screen bg-black">
       <ProductNav />
-      <div className="h-dvh flex flex-col justify-between pb-12 md:pb-0">
-        <div className="flex flex-col flex-grow">
-          <div className="flex flex-grow relative">
-            {/* Main Content - Centered with the right panel */}
-            <div className="flex-1 flex justify-center items-start md:items-center">
-              <div className="md:h-full flex flex-col min-w-[80vw] md:min-w-[30vw] max-w-[80vw] justify-center items-center">
-                <div className="flex md:order-last md:mt-4 justify-center w-full">
-                  <Intelligence />
-                </div>
-                <Suspense>
-                  <App
-                    defaultStsConfig={stsConfig}
-                    className="flex-shrink-0 h-auto items-end"
-                    requiresUserActionToInitialize={isMobile}
-                  />
-                </Suspense>
-                {/* Desktop Menu Items - Positioned higher */}
-                {isVoiceAgent && (
-                  <div className="hidden md:flex absolute left-8 top-1/3 -translate-y-1/2">
-                    <DesktopMenuItems />
-                  </div>
-                )}
-                {/* Desktop Conversation Toggle */}
-                {has4ConversationMessages ? (
-                  <div className="hidden md:flex justify-center mt-auto mb-4 md:mt-4 text-gray-350">
-                    <button className="text-[14px] text-gray-350 py-4" onClick={toggleConversation}>
-                      See full conversation <CaretIcon className="rotate-90 h-4 w-4" />
-                    </button>
-                  </div>
-                ) : null}
+      <VoiceAgentHeroBanner appComponent={appComponent} />
+      <UseCaseSelectorBoxes 
+        onSelectUseCase={handleSelectUseCase} 
+        currentInstructions={currentInstructions}
+      />
+      <div className="container mx-auto px-4 py-8">
+        {has4ConversationMessages ? (
+          <div className="flex justify-center mt-auto mb-4 md:mt-4 text-gray-350">
+            <button className="text-[14px] text-gray-350 py-4" onClick={toggleConversation}>
+              See full conversation <CaretIcon className="rotate-90 h-4 w-4" />
+            </button>
+          </div>
+        ) : null}
 
-                {/* Speech Bubbles */}
-                {!has4ConversationMessages &&
-                  !rateLimited &&
-                  status !== VoiceBotStatus.SLEEPING &&
-                  status !== VoiceBotStatus.NONE && (
-                    <div className="w-full">
-                      {/* Desktop */}
-                      <div className="hidden md:flex justify-center text-gray-450">Try saying:</div>
-                      <div className="hidden md:grid max-w-max mx-auto grid-cols-3 gap-4 mt-6 relative">
-                        <PromptSuggestions />
-                      </div>
-                      {/* Mobile */}
-                      <div className="flex md:hidden justify-center text-gray-450 mt-2">
-                        Try saying:
-                      </div>
-                      <div className="scrollable-element w-full flex md:hidden gap-4 items-center mt-4 overflow-x-auto -mr-10">
-                        <PromptSuggestions />
-                      </div>
-                    </div>
-                  )}
+        {!has4ConversationMessages &&
+          !rateLimited &&
+          status !== VoiceBotStatus.SLEEPING &&
+          status !== VoiceBotStatus.NONE && (
+            <div className="w-full mt-8">
+              <div className="flex justify-center text-gray-450">Try saying:</div>
+              <div className="hidden md:grid max-w-max mx-auto grid-cols-3 gap-4 mt-6 relative">
+                <PromptSuggestions />
+              </div>
+              <div className="scrollable-element w-full flex md:hidden gap-4 items-center mt-4 overflow-x-auto -mr-10">
+                <PromptSuggestions />
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Conversation */}
-        {conversationOpen && <Conversation toggleConversation={toggleConversation} />}
-
-        {/* Desktop Bottom Stuff */}
-        <div className={`hidden md:flex z-0 absolute bottom-0 left-8 right-8 mb-8`}>
-          <div className="space-y-4">
-            <Suspense>
-              <Latency />
-            </Suspense>
-          </div>
-        </div>
-
-        {/* Mobile Bottom Stuff */}
-        <div className={`flex flex-col z-0 items-center md:hidden`}>
-          {has4ConversationMessages && (
-            <div className="flex justify-center mt-auto text-gray-350">
-              <button className="text-sm text-gray-350 pb-8" onClick={toggleConversation}>
-                See full conversation <CaretIcon className="rotate-90 h-4 w-4" />
-              </button>
-            </div>
           )}
+      </div>
+      {conversationOpen && <Conversation toggleConversation={toggleConversation} />}
+      <div className="container mx-auto px-4 pb-8">
+        <div className="hidden md:flex justify-start">
+          <Suspense>
+            <Latency />
+          </Suspense>
         </div>
-
-        {/* Mobile Voice Selector */}
+      </div>
+      <div className="md:hidden">
         <Suspense>
           <VoiceSelector
-            className={`absolute md:hidden bottom-0 left-0 pb-[16px] pl-[16px]`}
+            className={`fixed bottom-0 left-0 pb-[16px] pl-[16px]`}
             collapsible
           />
-          <MobileMenu className="fixed md:hidden bottom-4 right-4 text-gray-200" />
+          <MobileMenu className="fixed bottom-4 right-4 text-gray-200" />
         </Suspense>
       </div>
       <LandingSections />
-      {/* Footer Section */}
-      <footer className="py-16 bg-gray-900">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col items-center justify-center space-y-8">
-            {/* Logo */}
-            <div className="flex items-center space-x-2">
-              <img 
-                src="/pragyaa_transparent_hor.png" 
-                alt="VoiceAgent Logo" 
-                className="h-8 object-contain"
-              />
-            </div>
-
-            {/* Links */}
-            <div className="flex items-center space-x-8 text-gray-400">
-              <a href="#privacy" className="hover:text-purple-400 transition-colors">
-                Privacy
-              </a>
-              <a href="#terms" className="hover:text-purple-400 transition-colors">
-                Terms
-              </a>
-              <a href="#contact" className="hover:text-purple-400 transition-colors">
-                Contact
-              </a>
-            </div>
-
-            {/* Copyright */}
-            <div className="text-gray-400 text-center">
-              ©2025 Voxot Solutions Pvt Ltd. All Rights Reserved.
-            </div>
-          </div>
-        </div>
-      </footer>
     </main>
   );
 } 

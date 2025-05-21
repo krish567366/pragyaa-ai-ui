@@ -1,7 +1,9 @@
 import type { FC } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 const LandingSections: FC = () => {
+  const router = useRouter();
   return (
     <div className="w-full bg-black text-white">
       {/* Features Section */}
@@ -172,7 +174,7 @@ const LandingSections: FC = () => {
             </div>
 
             {/* Step 5 */}
-            <div className="flex flex-col md:flex-row items-center gap-8">
+            <div id="book-a-demo" className="flex flex-col md:flex-row items-center gap-8">
               <div className="w-full md:w-1/2">
                 <div className="bg-gray-800 rounded-2xl p-8 relative overflow-hidden">
                   <div className="text-[120px] font-bold text-blue-500/20 absolute -top-10 -left-6">
@@ -207,7 +209,7 @@ const LandingSections: FC = () => {
       </section>
 
       {/* Pricing Section */}
-      <section className="py-20">
+      <section id="voiceagent-pricing-plans" className="py-20">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl md:text-5xl font-bold text-center mb-6">
             Choose Your Plan
@@ -247,7 +249,10 @@ const LandingSections: FC = () => {
                   <span>Basic support</span>
                 </li>
               </ul>
-              <button className="w-full py-3 px-4 bg-purple-600 hover:bg-purple-700 rounded-lg font-medium transition-colors">
+              <button 
+                onClick={() => router.push('/contact')}
+                className="w-full py-3 px-4 bg-purple-600 hover:bg-purple-700 rounded-lg font-medium transition-colors"
+              >
                 Get Started
               </button>
             </div>
@@ -291,7 +296,10 @@ const LandingSections: FC = () => {
                   <span>Custom voice training</span>
                 </li>
               </ul>
-              <button className="w-full py-3 px-4 bg-purple-600 hover:bg-purple-700 rounded-lg font-medium transition-colors">
+              <button 
+                onClick={() => router.push('/contact')}
+                className="w-full py-3 px-4 bg-purple-600 hover:bg-purple-700 rounded-lg font-medium transition-colors"
+              >
                 Get Started
               </button>
             </div>
@@ -337,70 +345,16 @@ const LandingSections: FC = () => {
                   <span>On-premises deployment</span>
                 </li>
               </ul>
-              <button className="w-full py-3 px-4 bg-gray-800 hover:bg-gray-700 rounded-lg font-medium transition-colors">
+              <button 
+                onClick={() => router.push('/contact')}
+                className="w-full py-3 px-4 bg-gray-800 hover:bg-gray-700 rounded-lg font-medium transition-colors"
+              >
                 Contact Sales
               </button>
             </div>
           </div>
         </div>
       </section>
-
-      {/* FAQ Section */}
-      <section className="py-20 bg-gray-900">
-        <div className="container mx-auto px-4">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-16">
-            Frequently Asked Questions
-          </h2>
-          <div className="max-w-3xl mx-auto space-y-8">
-            <div className="bg-black p-6 rounded-xl">
-              <h3 className="text-xl font-bold mb-2">What is VoiceAgent?</h3>
-              <p className="text-gray-400">VoiceAgent is an advanced AI-powered voice interface that enables natural conversations with a computer system.</p>
-            </div>
-            <div className="bg-black p-6 rounded-xl">
-              <h3 className="text-xl font-bold mb-2">How do I start using VoiceAgent?</h3>
-              <p className="text-gray-400">Simply click the orb in the center of the screen and start speaking. VoiceAgent will listen and respond naturally.</p>
-            </div>
-            <div className="bg-black p-6 rounded-xl">
-              <h3 className="text-xl font-bold mb-2">Can I change the voice?</h3>
-              <p className="text-gray-400">Yes! You can choose from multiple voice options including Asteria, Orion, Luna, and Arcas.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer Section */}
-      <footer className="py-16 bg-gray-900">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col items-center justify-center space-y-8">
-            {/* Logo */}
-            <div className="flex items-center space-x-2">
-              <img 
-                src="/pragyaa_transparent_hor.png" 
-                alt="VoiceAgent Logo" 
-                className="h-8 object-contain"
-              />
-            </div>
-
-            {/* Links */}
-            <div className="flex items-center space-x-8 text-gray-400">
-              <a href="#privacy" className="hover:text-white transition-colors">
-                Privacy
-              </a>
-              <a href="#terms" className="hover:text-white transition-colors">
-                Terms
-              </a>
-              <a href="#signup" className="hover:text-white transition-colors">
-                Sign up
-              </a>
-            </div>
-
-            {/* Copyright */}
-            <div className="text-gray-400 text-center">
-              ©2025 VoiceAgent. All Rights Reserved.
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };

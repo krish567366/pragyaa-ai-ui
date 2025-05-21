@@ -7,7 +7,7 @@ const ContentSecurityPolicy = `
   style-src 'self' https://assets.calendly.com 'unsafe-inline'; 
   img-src 'self' data:;
   font-src 'self';
-  connect-src 'self' https://calendly.com;
+  connect-src 'self' http://localhost:3000 http://localhost:3000/api/authenticate https://calendly.com wss://api.deepgram.com wss://agent.deepgram.com;
   frame-src 'self' https://calendly.com;
 `.replace(/\s{2,}/g, ' ').trim(); // Format CSP string
 

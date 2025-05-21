@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import ProductNav from '../components/ProductNav';
 import AnimatedVoiceLensBanner from '../components/AnimatedVoiceLensBanner';
 
@@ -18,9 +19,9 @@ export default function VoiceLens() {
               <p className="text-lg md:text-xl text-gray-300 mb-8">
                 Boost key business outcomes by up to 30% with VoiceLens—groundbreaking AI-powered voice analytics customised specifically for your key metrics.
               </p>
-              <button className="bg-gradient-to-r from-purple-500 to-coral-500 text-white px-8 py-3 rounded-lg text-lg font-medium hover:from-purple-600 hover:to-coral-600 transition-all duration-300 shadow-[0_0_15px_rgba(168,85,247,0.5)] hover:shadow-[0_0_20px_rgba(168,85,247,0.6)] border border-purple-400/20">
-                Try VoiceLens
-              </button>
+              <Link href="#variants-section" className="bg-gradient-to-r from-purple-500 to-coral-500 text-white px-8 py-3 rounded-lg text-lg font-medium hover:from-purple-600 hover:to-coral-600 transition-all duration-300 shadow-[0_0_15px_rgba(168,85,247,0.5)] hover:shadow-[0_0_20px_rgba(168,85,247,0.6)] border border-purple-400/20">
+                Tell Me More
+              </Link>
             </div>
 
             {/* Right Image */}
@@ -49,7 +50,7 @@ export default function VoiceLens() {
       </section>
 
       {/* Variants Section */}
-      <section className="py-20 bg-gray-900">
+      <section id="variants-section" className="py-20 bg-gray-900">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-purple-300">
             3 variants
@@ -413,40 +414,6 @@ export default function VoiceLens() {
           </div>
         </div>
       </section>
-
-      {/* Footer Section */}
-      <footer className="py-16 bg-gray-900">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col items-center justify-center space-y-8">
-            {/* Logo */}
-            <div className="flex items-center space-x-2">
-              <img 
-                src="/pragyaa_transparent_hor.png" 
-                alt="VoiceLens Logo" 
-                className="h-8 object-contain"
-              />
-            </div>
-
-            {/* Links */}
-            <div className="flex items-center space-x-8 text-gray-400">
-              <a href="#privacy" className="hover:text-purple-400 transition-colors">
-                Privacy
-              </a>
-              <a href="#terms" className="hover:text-purple-400 transition-colors">
-                Terms
-              </a>
-              <a href="#contact" className="hover:text-purple-400 transition-colors">
-                Contact
-              </a>
-            </div>
-
-            {/* Copyright */}
-            <div className="text-gray-400 text-center">
-              ©2025 Voxot Solutions Pvt Ltd. All Rights Reserved.
-            </div>
-          </div>
-        </div>
-      </footer>
     </main>
   );
 } 

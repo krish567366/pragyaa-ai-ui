@@ -13,14 +13,23 @@ const audioConfig: AudioConfig = {
 };
 
 const baseConfig = {
-  type: "SettingsConfiguration",
+  type: "Settings",
   audio: audioConfig,
   agent: {
-    listen: { model: "nova-2" },
-    speak: { model: "aura-asteria-en" },
+    listen: { 
+      provider: { 
+        type: "deepgram", 
+        model: "nova-2" 
+      }
+    },
+    speak: { 
+      provider: { 
+        type: "deepgram", 
+        model: "aura-asteria-en" 
+      }
+    },
     think: {
-      provider: { type: "open_ai" },
-      model: "gpt-4o",
+      provider: { type: "open_ai", model: "gpt-4o" },
     },
   },
 };
@@ -31,24 +40,7 @@ export const stsConfig: StsConfig = {
     ...baseConfig.agent,
     think: {
       ...baseConfig.agent.think,
-      provider: { type: "open_ai", fallback_to_groq: true },
-      instructions: `
-                ## Base instructions
-                You are a helpful voice assistant made by Deepgram's engineers.
-                Respond in a friendly, human, conversational manner.
-                YOU MUST answer in 1-2 sentences at most when the message is not empty.
-                Always reply to empty messages with an empty message.
-                Ask follow up questions.
-                Ask one question at a time.
-                Your messages should have no more than than 120 characters.
-                Do not use abbreviations for units.
-                Separate all items in a list with commas.
-                Keep responses unique and free of repetition.
-                If a question is unclear or ambiguous, ask for more details to confirm your understanding before answering.
-                If someone asks how you are, or how you are feeling, tell them.
-                Deepgram gave you a mouth and ears so you can take voice as an input. You can listen and speak.
-                Your name is Voicebot.
-                `,
+      prompt: "You are a helpful assistant.",
       functions: [],
     },
   },

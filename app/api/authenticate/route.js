@@ -19,16 +19,20 @@ export async function POST() {
     let { result: projectsResult, error: projectsError } = await deepgram.manage.getProjects();
 
     if (projectsError) {
+      console.error("Error getting Deepgram projects:", projectsError);
       return NextResponse.json(projectsError);
     }
 
     const project = projectsResult?.projects[0];
 
     if (!project) {
+      console.error("No Deepgram project found.");
       return NextResponse.json(
         new DeepgramError("Cannot find a Deepgram project. Please create a project first."),
       );
     }
+
+    console.log("Found project:", project.project_id);
 
     let { result: newKeyResult, error: newKeyError } = await deepgram.manage.createProjectKey(
       project.project_id,
@@ -41,9 +45,11 @@ export async function POST() {
     );
 
     if (newKeyError) {
+      console.error("Error creating Deepgram project key:", newKeyError);
       return NextResponse.json(newKeyError);
     }
 
+    console.log("Successfully created temporary key.");
     return NextResponse.json({ ...newKeyResult });
   } catch (error) {
     console.error('Authentication error:', error);

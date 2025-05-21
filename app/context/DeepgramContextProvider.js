@@ -1,11 +1,11 @@
 "use client";
 
 import { createContext, useContext, useState, useRef, useEffect } from "react";
-import { getApiKey, sendKeepAliveMessage } from "app/utils/deepgramUtils";
+import { getApiKey, sendKeepAliveMessage, sendSocketMessage } from "app/utils/deepgramUtils";
 
 const DeepgramContext = createContext();
 
-const DeepgramContextProvider = ({ children }) => {
+const DeepgramContextProvider = ({ children, initialSettings, configProcessor }) => {
   const [socket, setSocket] = useState();
   const [socketState, setSocketState] = useState(-1);
   const [reconnectAttempts, setReconnectAttempts] = useState(0);
@@ -13,7 +13,7 @@ const DeepgramContextProvider = ({ children }) => {
   const keepAlive = useRef();
   const maxReconnectAttempts = 5;
 
-  const connectToDeepgram = async () => {
+  const connectToDeepgram = async (processedConfig) => {
     console.log("Attempting to connect to Deepgram...");
     if (reconnectAttempts >= maxReconnectAttempts) {
       console.log("Max reconnect attempts reached.");
@@ -26,8 +26,9 @@ const DeepgramContextProvider = ({ children }) => {
     try {
       const apiKey = await getApiKey();
       console.log("Got API key, creating WebSocket connection...");
+      console.log("API Key for WebSocket:", apiKey);
       
-      const newSocket = new WebSocket("wss://agent.deepgram.com/agent", [
+      const newSocket = new WebSocket("wss://agent.deepgram.com/v1/agent/converse", [
         "token",
         apiKey,
       ]);
@@ -35,8 +36,16 @@ const DeepgramContextProvider = ({ children }) => {
       const onOpen = () => {
         setSocketState(1); // connected
         setReconnectAttempts(0); // reset reconnect attempts after a successful connection
-        console.log("WebSocket connected successfully.");
-        keepAlive.current = setInterval(sendKeepAliveMessage(newSocket), 10000);
+        console.log("WebSocket connected successfully. Sending initial settings.");
+
+        if (processedConfig) {
+          console.log("Sending Initial Settings from DeepgramContextProvider (via connectToDeepgram arg):", JSON.stringify(processedConfig, null, 2));
+          sendSocketMessage(newSocket, processedConfig);
+        } else {
+          console.error("Processed config not provided to connectToDeepgram. Cannot send settings.");
+        }
+
+        keepAlive.current = setInterval(() => sendKeepAliveMessage(newSocket), 10000);
       };
 
       const onError = (err) => {
@@ -60,7 +69,7 @@ const DeepgramContextProvider = ({ children }) => {
           // Handle different message types
           switch (data.type) {
             case "Welcome":
-              console.log("Connected to Deepgram with session ID:", data.session_id);
+              console.log("Connected to Deepgram with request ID:", data.request_id);
               break;
             case "Error":
               console.error("Deepgram error:", data.error);

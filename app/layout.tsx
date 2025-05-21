@@ -3,6 +3,7 @@ import { Inter, Fira_Code } from "next/font/google";
 import localFont from "next/font/local";
 import { sharedOpenGraphMetadata } from "./lib/constants";
 import Providers from "./components/Providers";
+import Footer from "./components/Footer";
 import Script from "next/script";
 
 import "./globals.css";
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       </head>
       <body>
         <Providers>{children}</Providers>
+        <Footer />
         <Script src="https://assets.calendly.com/assets/external/widget.js" strategy="afterInteractive" />
       </body>
     </html>

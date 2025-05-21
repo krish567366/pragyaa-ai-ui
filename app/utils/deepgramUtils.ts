@@ -2,12 +2,16 @@ import { convertFloat32ToInt16, downsample } from "../utils/audioUtils";
 import nextConfig from "next.config.mjs";
 
 export const getApiKey = async () => {
-  const result = await (await fetch(withBasePath("/api/authenticate"), { method: "POST" })).json();
+  const fetchUrl = withBasePath("/api/authenticate");
+  console.log("Attempting to fetch API key from:", fetchUrl);
+  const result = await (await fetch(fetchUrl, { method: "POST" })).json();
+  console.log("Full result from /api/authenticate:", result);
 
   return result.key;
 };
 
 export const sendMicToSocket = (socket: WebSocket) => (event: AudioProcessingEvent) => {
+  console.log("[sendMicToSocket] Audio processing event, sending data.");
   const inputData = event?.inputBuffer?.getChannelData(0);
   const downsampledData = downsample(inputData, 48000, 16000);
   const audioDataToSend = convertFloat32ToInt16(downsampledData);
@@ -36,16 +40,29 @@ export interface AudioConfig {
 }
 
 export interface AgentConfig {
-  listen: { model: string };
+  listen: { 
+    provider: { 
+      type: string; 
+      model: string; 
+      keyterms?: string[];
+    }
+  };
   speak: {
-    model: string;
-    temp?: number;
-    rep_penalty?: number;
+    provider: {
+      type: string;
+      model: string;
+    };
+    endpoint?: {
+      url: string;
+      headers?: Record<string, string>;
+    };
   };
   think: {
-    provider: { type: string; fallback_to_groq?: boolean };
-    model: string;
-    instructions: string;
+    provider: { 
+      type: string; 
+      model: string;
+    };
+    prompt: string;
     functions?: LlmFunction[];
   };
 }
@@ -107,14 +124,23 @@ export interface Voice {
 }
 
 export type DGMessage =
-  | { type: "SettingsConfiguration"; audio: AudioConfig; agent: AgentConfig }
+  | { type: "Settings"; audio: AudioConfig; agent: AgentConfig }
   | { type: "UpdateInstructions"; instructions: string }
   | { type: "UpdateSpeak"; model: string }
   | { type: "KeepAlive" };
 
 export const withBasePath = (path: string): string => {
-  const basePath = nextConfig.basePath || "/";
-  if (path === "/") return basePath;
-
-  return basePath + path;
+  // Ensure nextConfig.basePath is treated as empty if it's not a non-empty string
+  const basePath = (typeof nextConfig.basePath === 'string' && nextConfig.basePath.length > 0) ? nextConfig.basePath : '';
+  
+  // Prevent double slashes if path already starts with a slash and basePath is not empty
+  if (basePath && path.startsWith('/')) {
+    return basePath + path.substring(1);
+  } 
+  // Or if path doesn't start with a slash and basepath is not empty (add one)
+  else if (basePath && !path.startsWith('/')){
+    return basePath + '/' + path;
+  }
+  // If basePath is empty, just return the path (should typically start with / for API routes)
+  return path;
 };
