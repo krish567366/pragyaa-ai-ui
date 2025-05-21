@@ -1,7 +1,32 @@
 /** @type {import('next').NextConfig} */
+
+// Define Content Security Policy
+const ContentSecurityPolicy = `
+  default-src 'self';
+  script-src 'self' https://assets.calendly.com 'unsafe-inline' 'unsafe-eval';
+  style-src 'self' https://assets.calendly.com 'unsafe-inline'; 
+  img-src 'self' data:;
+  font-src 'self';
+  connect-src 'self' http://localhost:3000 http://localhost:3000/api/authenticate https://calendly.com wss://api.deepgram.com wss://agent.deepgram.com;
+  frame-src 'self' https://calendly.com;
+`.replace(/\s{2,}/g, ' ').trim(); // Format CSP string
+
 const nextConfig = {
   basePath: "",
   output: 'standalone',
+  async headers() { // Add headers function
+    return [
+      {
+        source: '/:path*', // Apply CSP to all paths
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: ContentSecurityPolicy,
+          },
+        ],
+      },
+    ];
+  },
   async rewrites() {
     return [
       {

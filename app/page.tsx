@@ -2,10 +2,62 @@
 
 import Link from 'next/link';
 import ProductNav from './components/ProductNav';
-import AnimatedLogo from './components/AnimatedLogo';
+// import AnimatedLogo from './components/AnimatedLogo';
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 export default function HomePage() {
+  const [showCalendly, setShowCalendly] = useState(false);
+
+  useEffect(() => {
+    console.log("HomePage: Hash effect triggered.");
+    const handleHashChange = () => {
+      console.log("HomePage: hashchange event detected. Current hash:", window.location.hash);
+      if (window.location.hash === '#book-a-demo-section') {
+        console.log("HomePage: #book-a-demo-section found in hashchange, setting showCalendly to true.");
+        setShowCalendly(true);
+      }
+    };
+
+    // Check on initial load
+    console.log("HomePage: Initial hash check. Current hash:", window.location.hash);
+    if (window.location.hash === '#book-a-demo-section') {
+      console.log("HomePage: #book-a-demo-section found on initial load, setting showCalendly to true.");
+      setShowCalendly(true);
+    }
+
+    // Listen for hash changes if the user is already on the page
+    window.addEventListener('hashchange', handleHashChange, false);
+
+    // Cleanup listener
+    return () => {
+      console.log("HomePage: Cleaning up hashchange listener.");
+      window.removeEventListener('hashchange', handleHashChange, false);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (showCalendly) {
+      console.log("HomePage: showCalendly is true, attempting to init Calendly widget.");
+      const calendlyContainer = document.getElementById('calendly-inline-widget');
+      if (calendlyContainer && (window as any).Calendly) {
+        console.log("HomePage: Calendly container and Calendly API found, initializing widget.");
+        calendlyContainer.innerHTML = '';
+        (window as any).Calendly.initInlineWidget({
+          url: 'https://calendly.com/pragyaa-info/30min',
+          parentElement: calendlyContainer,
+          prefill: {},
+          utm: {}
+        });
+      } else {
+        console.warn("HomePage: Calendly container or Calendly API not found.", { calendlyContainer, calendlyGlobal: (window as any).Calendly });
+      }
+    } else {
+      console.log("HomePage: showCalendly is false, Calendly widget not shown.");
+    }
+  }, [showCalendly]);
+
   return (
     <main className="min-h-screen bg-black">
       <ProductNav />
@@ -34,7 +86,7 @@ export default function HomePage() {
             
             {/* Right Logo */}
             <div className="w-full md:w-1/2 flex justify-center md:justify-end">
-              <AnimatedLogo />
+              {/* <AnimatedLogo /> */}
             </div>
           </div>
         </div>
@@ -44,7 +96,7 @@ export default function HomePage() {
       <section id="products" className="py-24 bg-gray-900">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 text-white">
-            Our AI Solutions
+            Our AI Products
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {/* VoiceAgent */}
@@ -283,53 +335,30 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
-              <div>
+              <div id="book-a-demo-section">
                 <h3 className="text-2xl font-bold mb-6 text-white">Schedule a Demo</h3>
                 <p className="text-gray-400 mb-6">
                   Interested in seeing our products in action? Schedule a personalized demo with our team.
                 </p>
-                <Link href="#" className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors inline-block">
-                  Book a Demo
-                </Link>
+                {!showCalendly ? (
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      console.log("HomePage: 'Book a Demo' button clicked.");
+                      setShowCalendly(true);
+                    }}
+                    className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors inline-block"
+                  >
+                    Book a Demo
+                  </button>
+                ) : (
+                  <div id="calendly-inline-widget" style={{ minWidth: '320px', height: '700px' }}></div>
+                )}
               </div>
             </div>
           </div>
         </div>
       </section>
-
-      {/* Footer Section */}
-      <footer className="py-16 bg-black">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col items-center justify-center space-y-8">
-            {/* Logo */}
-            <div className="flex items-center space-x-2">
-              <img 
-                src="/pragyaa_transparent_hor.png" 
-                alt="Pragyaa AI Logo" 
-                className="h-8 object-contain"
-              />
-            </div>
-
-            {/* Links */}
-            <div className="flex items-center space-x-8 text-gray-400">
-              <a href="#privacy" className="hover:text-purple-400 transition-colors">
-                Privacy
-              </a>
-              <a href="#terms" className="hover:text-purple-400 transition-colors">
-                Terms
-              </a>
-              <a href="#contact" className="hover:text-purple-400 transition-colors">
-                Contact
-              </a>
-            </div>
-
-            {/* Copyright */}
-            <div className="text-gray-400 text-center">
-              ©2025 Voxot Solutions Pvt Ltd. All Rights Reserved.
-            </div>
-          </div>
-        </div>
-      </footer>
     </main>
   );
 }

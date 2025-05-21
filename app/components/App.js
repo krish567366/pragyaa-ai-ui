@@ -96,14 +96,22 @@ export const App = ({
    * Logic for microphone found in Microphone Context Provider
    */
   useEffect(() => {
+    if (requiresUserActionToInitialize && !isInitialized) {
+      return;
+    }
+
     const initializeMicrophone = async () => {
       try {
         await setupMicrophone();
       } catch (error) {
         console.error('Failed to initialize microphone:', error);
         // Retry after a short delay
-        setTimeout(() => {
-          setupMicrophone();
+        setTimeout(async () => {
+          try {
+            await setupMicrophone();
+          } catch (e) {
+            console.error("Failed to initialize microphone on retry:", e);
+          }
         }, 1000);
       }
     };
@@ -118,11 +126,18 @@ export const App = ({
       if (processor) {
         processor.disconnect();
       }
-      if (microphoneAudioContext) {
+      if (microphoneAudioContext && microphoneAudioContext.state !== 'closed') {
+        console.log("App.js: Closing microphoneAudioContext. Current state:", microphoneAudioContext.state);
         microphoneAudioContext.close();
+      } else if (microphoneAudioContext) {
+        console.warn("App.js: microphoneAudioContext already closed or in an unexpected state. State:", microphoneAudioContext.state);
       }
     };
-  }, [setupMicrophone, microphone, processor, microphoneAudioContext]);
+  }, [
+    setupMicrophone,
+    requiresUserActionToInitialize,
+    isInitialized,
+  ]);
 
   useEffect(() => {
     let wakeLock;
@@ -153,62 +168,44 @@ export const App = ({
    * Runs whenever the `microphone` changes state, but exits if no microphone state.
    * `microphone` is only set once it is ready to open and record audio.
    */
-  useEffect(() => {
-    if (microphoneState === 1 && socket && defaultStsConfig) {
-      /**
-       * When the connection to Deepgram opens, the following will happen;
-       *  1. Send the API configuration first.
-       *  3. Start the microphone immediately.
-       *  4. Update the app state to the INITIAL listening state.
-       */
-
-      const onOpen = () => {
-        const combinedStsConfig = applyParamsToConfig(defaultStsConfig);
-
-        sendSocketMessage(socket, combinedStsConfig);
-        startMicrophone();
-        startListening(true);
-        if (pathname === "/") {
-          // This is the "base" demo at /agent
-          toggleSleep();
-        }
-      };
-
-      socket.addEventListener("open", onOpen);
-
-      /**
-       * Cleanup function runs before component unmounts. Use this
-       * to deregister/remove event listeners.
-       */
-      return () => {
-        socket.removeEventListener("open", onOpen);
-        if (microphone) {
-          microphone.ondataavailable = null;
-        }
-      };
-    }
-  }, [microphone, socket, microphoneState, defaultStsConfig, pathname, startMicrophone, startListening, toggleSleep, applyParamsToConfig]);
-
   /**
    * Performs checks to ensure that the system is ready to proceed with setting up the data transmission
    * Attaches an event listener to the microphone which sends audio data through the WebSocket as it becomes available
    */
   useEffect(() => {
-    if (!microphone) return;
-    if (!socket) return;
-    if (microphoneState !== 2) return;
-    if (socketState !== 1) return;
-    processor.onaudioprocess = sendMicToSocket(socket);
-  }, [microphone, socket, microphoneState, socketState, processor]);
-
-  useEffect(() => {
-    if (!processor || socket?.readyState !== 1) return;
-    if (status === VoiceBotStatus.SLEEPING) {
-      processor.onaudioprocess = null;
-    } else {
-      processor.onaudioprocess = sendMicToSocket(socket);
+    if (!processor || !microphone) {
+      // If processor exists, ensure its onaudioprocess is cleared if microphone isn't ready
+      if (processor && processor.onaudioprocess) {
+        // console.log("[App.js Consolidated Effect] Clearing onaudioprocess due to missing microphone/processor early return.");
+        processor.onaudioprocess = null;
+      }
+      return;
     }
-  }, [status, processor, socket]);
+
+    const shouldAttach =
+      socket?.readyState === 1 && // Socket is open
+      status !== VoiceBotStatus.SLEEPING && // Not sleeping
+      microphoneState === 2; // Microphone is fully started
+
+    if (shouldAttach) {
+      if (processor.onaudioprocess !== sendMicToSocket(socket)) { // Avoid redundant assignments if function ref is same
+        // console.log("[App.js Consolidated Effect] Attaching onaudioprocess. SocketState:", socket?.readyState, "Status:", status, "MicState:", microphoneState);
+        processor.onaudioprocess = sendMicToSocket(socket);
+      }
+    } else {
+      if (processor.onaudioprocess) {
+        // console.log("[App.js Consolidated Effect] Clearing onaudioprocess. SocketState:", socket?.readyState, "Status:", status, "MicState:", microphoneState);
+        processor.onaudioprocess = null;
+      }
+    }
+
+    return () => {
+      if (processor) {
+        // console.log("[App.js Consolidated Effect Cleanup] Clearing onaudioprocess on processor instance during cleanup.");
+        processor.onaudioprocess = null;
+      }
+    };
+  }, [processor, socket, status, microphoneState, microphone]);
 
   /**
    * Create AnalyserNode for user microphone audio context.
@@ -252,18 +249,21 @@ export const App = ({
     if (
       microphoneState === 1 &&
       socketState === -1 &&
+      defaultStsConfig &&
       (!requiresUserActionToInitialize || (requiresUserActionToInitialize && isInitialized))
     ) {
-      connectToDeepgram();
+      const combinedStsConfig = applyParamsToConfig(defaultStsConfig);
+      connectToDeepgram(combinedStsConfig);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    microphone,
-    socket,
     microphoneState,
     socketState,
-    isInitialized,
     requiresUserActionToInitialize,
+    isInitialized,
+    connectToDeepgram,
+    defaultStsConfig,
+    applyParamsToConfig
   ]);
 
   /**
@@ -287,9 +287,28 @@ export const App = ({
 
   useEffect(() => {
     if (previousInstructions !== instructions && socket && socketState === 1) {
+      const defaultThinkInstructions = defaultStsConfig?.agent?.think?.instructions;
+      // Ensure dfltString is a string, or an empty string if defaultThinkInstructions is not a string or undefined.
+      const dfltString = typeof defaultThinkInstructions === 'string' ? defaultThinkInstructions : "";
+
+      // Assuming 'instructions' from useStsQueryParams (assigned to the 'instructions' variable)
+      // is already a string or an empty string. If not, it should also be validated similarly.
+      const queryString = instructions;
+
+      let combinedMessageInstructions = "";
+      if (dfltString && queryString) {
+        combinedMessageInstructions = `${dfltString}\n${queryString}`;
+      } else if (dfltString) {
+        combinedMessageInstructions = dfltString;
+      } else if (queryString) {
+        combinedMessageInstructions = queryString;
+      }
+      // If both dfltString and queryString are effectively empty (empty strings),
+      // combinedMessageInstructions will remain "".
+
       sendSocketMessage(socket, {
         type: "UpdateInstructions",
-        instructions: `${defaultStsConfig.agent.think.instructions}\n${instructions}`,
+        instructions: combinedMessageInstructions,
       });
     }
   }, [defaultStsConfig, previousInstructions, instructions, socket, socketState]);
@@ -439,6 +458,28 @@ export const App = ({
         break;
     }
   };
+
+  // New useEffect to call startMicrophone when socket is connected and mic is ready
+  useEffect(() => {
+    if (socketState === 1 && microphoneState === 1) {
+      console.log("[App.js Post-Connect Effect] Socket connected and microphone ready. Calling startMicrophone().");
+      startMicrophone();
+    }
+  }, [socketState, microphoneState, startMicrophone]);
+
+  // New useEffect to transition to LISTENING state once all initial setup is complete
+  useEffect(() => {
+    if (
+      (isInitialized || !requiresUserActionToInitialize) &&
+      socketState === 1 && // Deepgram connected
+      microphoneState === 2 && // Microphone open and processor attached
+      status === VoiceBotStatus.NONE && // Only if in initial state
+      !rateLimited // And not rate limited
+    ) {
+      // console.log("[App.js] Initial setup complete, transitioning to LISTENING state.");
+      startListening();
+    }
+  }, [isInitialized, requiresUserActionToInitialize, socketState, microphoneState, status, startListening, rateLimited]);
 
   if (rateLimited) {
     return <RateLimited />;

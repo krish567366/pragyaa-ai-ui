@@ -27,114 +27,94 @@ const MicrophoneContextProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [microphone, setMicrophone] = useState<MediaStreamAudioSourceNode | null>(null);
   const [processor, setProcessor] = useState<ScriptProcessorNode | null>(null);
   const [microphoneAudioContext, setMicrophoneAudioContext] = useState<AudioContext | null>(null);
-  const [microphoneState, setMicrophoneState] = useState(0);
+  const [microphoneState, setMicrophoneState] = useState(0); // 0: not_set_up, 1: ready, 2: open, -1: error
   const { socket } = useDeepgram();
   const isCleaningUp = useRef(false);
   const isSettingUp = useRef(false);
 
   const cleanupAudioContext = useCallback(() => {
-    console.log("Starting cleanup of audio context...");
     if (isCleaningUp.current) {
-      console.log("Cleanup already in progress, skipping...");
+      // console.log("[MicProvider] Cleanup already in progress, skipping...");
       return;
     }
     isCleaningUp.current = true;
+    // console.log("[MicProvider] Starting cleanup of audio context...");
 
-    try {
-      // First disconnect the nodes
-      if (microphone) {
-        try {
-          console.log("Disconnecting microphone...");
-          microphone.disconnect();
-        } catch (error) {
-          console.warn('Error disconnecting microphone:', error);
-        }
-      }
-      if (processor) {
-        try {
-          console.log("Disconnecting processor...");
-          processor.disconnect();
-        } catch (error) {
-          console.warn('Error disconnecting processor:', error);
-        }
-      }
-
-      // Then close the audio context if it's not already closed
-      if (microphoneAudioContext) {
-        console.log("AudioContext state:", microphoneAudioContext.state);
-        if (microphoneAudioContext.state !== 'closed') {
-          try {
-            console.log("Closing audio context...");
-            microphoneAudioContext.close();
-          } catch (error) {
-            console.warn('Error closing audio context:', error);
-          }
-        } else {
-          console.log("AudioContext is already closed");
-        }
-      }
-
-      // Reset state
-      setMicrophone(null);
-      setProcessor(null);
-      setMicrophoneAudioContext(null);
-      setMicrophoneState(0);
-    } finally {
-      isCleaningUp.current = false;
-      console.log("Cleanup completed");
+    if (microphone?.disconnect) {
+      try { microphone.disconnect(); } catch (e) { console.warn("[MicProvider] Error disconnecting microphone node:", e); }
     }
-  }, [microphone, processor, microphoneAudioContext]);
+    if (processor?.disconnect) {
+      try { processor.disconnect(); } catch (e) { console.warn("[MicProvider] Error disconnecting processor node:", e); }
+    }
+    
+    if (microphoneAudioContext && microphoneAudioContext.state !== 'closed') {
+      // console.log("[MicProvider] Closing AudioContext. Current state:", microphoneAudioContext.state);
+      microphoneAudioContext.close().catch(e => console.warn("[MicProvider] Error closing AudioContext:", e));
+    }
+
+    setMicrophone(null);
+    setProcessor(null);
+    setMicrophoneAudioContext(null);
+    setMicrophoneState(0); // Reset to not_set_up
+    // console.log("[MicProvider] Audio context cleanup finished.");
+    isCleaningUp.current = false;
+  }, [microphone, processor, microphoneAudioContext]); // Depends on these to disconnect them
 
   const setupMicrophone = useCallback(async () => {
-    console.log("Starting microphone setup...");
     if (isSettingUp.current) {
-      console.log("Setup already in progress, skipping...");
+      // console.log("[MicProvider] Setup already in progress, skipping setupMicrophone call.");
       return;
     }
     isSettingUp.current = true;
+    // console.log("[MicProvider] setupMicrophone called. Current mic state:", microphoneState);
+
+    // Clean up any existing context *before* setting up a new one.
+    // This makes setupMicrophone more idempotent.
+    if (microphoneAudioContext && microphoneAudioContext.state !== 'closed') {
+      // console.log("[MicProvider] Existing audio context found in setupMicrophone. Cleaning up first.");
+      cleanupAudioContext(); // Call the main cleanup utility
+      // Yield for a moment to allow cleanup effects to settle if necessary, though direct cleanup should be robust.
+      // await new Promise(resolve => setTimeout(resolve, 0)); 
+    } else if (microphone || processor) {
+      // console.log("[MicProvider] Stale mic/processor nodes found without an open audio context. Cleaning.");
+      cleanupAudioContext();
+    }
+
+    setMicrophoneState(0); // Indicate setting up (or re-setting up)
+    // console.log("[MicProvider] Attempting to get user media...");
 
     try {
-      // Clean up existing microphone if any
-      cleanupAudioContext();
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          sampleRate: 16000, // Recommended for Deepgram
+          channelCount: 1,
+          echoCancellation: true,
+          noiseSuppression: true, // Enable noise suppression
+          autoGainControl: true, // Enable auto gain control
+        },
+      });
+      // console.log("[MicProvider] Got user media stream.");
 
-      // Request microphone access
-      console.log("Requesting microphone access...");
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      console.log("Microphone access granted");
-      
-      // Create new audio context
-      console.log("Creating new audio context...");
       const newAudioContext = new AudioContext();
-      const newMicrophone = newAudioContext.createMediaStreamSource(stream);
-      const newProcessor = newAudioContext.createScriptProcessor(4096, 1, 1);
+      const newMicrophoneNode = newAudioContext.createMediaStreamSource(stream);
+      // Buffer size should be a power of 2, e.g., 4096. Adjust if needed.
+      const newProcessorNode = newAudioContext.createScriptProcessor(4096, 1, 1);
+      // console.log("[MicProvider] Audio nodes created.");
 
-      // Set up event handlers
-      newProcessor.onaudioprocess = (e) => {
-        if (socket && socket.readyState === WebSocket.OPEN) {
-          const inputData = e.inputBuffer.getChannelData(0);
-          socket.send(inputData);
-        }
-      };
-
-      // Connect nodes
-      console.log("Connecting audio nodes...");
-      newMicrophone.connect(newProcessor);
-      newProcessor.connect(newAudioContext.destination);
-
-      // Update state
-      setMicrophone(newMicrophone);
-      setProcessor(newProcessor);
       setMicrophoneAudioContext(newAudioContext);
-      setMicrophoneState(1);
-      console.log("Microphone setup completed successfully");
-    } catch (error) {
-      console.error('Error setting up microphone:', error);
-      setMicrophoneState(0);
-      throw error;
+      setMicrophone(newMicrophoneNode);
+      setProcessor(newProcessorNode);
+      setMicrophoneState(1); // Ready for App.js to call startMicrophone()
+      // console.log("[MicProvider] Microphone setup complete. State set to 1 (ready).");
+    } catch (err) {
+      console.error("[MicProvider] Error setting up microphone:", err);
+      setMicrophoneState(-1); // Error state
+      cleanupAudioContext(); // Clean up any partial setup
     } finally {
       isSettingUp.current = false;
+      // console.log("[MicProvider] setupMicrophone finished execution. Mic state:", microphoneState);
     }
-  }, [socket, cleanupAudioContext]);
+  }, [cleanupAudioContext, microphoneAudioContext, microphone, processor]); // Added dependencies for proper cleanup and re-entrancy checks
 
   const startMicrophone = useCallback(() => {
     console.log("Starting microphone...");

@@ -18,7 +18,7 @@ const MicrophoneContextProvider = ({ children }) => {
   const [microphoneAudioContext, setMicrophoneAudioContext] = useState();
   const [processor, setProcessor] = useState();
 
-  const setupMicrophone = async () => {
+  const setupMicrophone = useCallback(async () => {
     setMicrophoneState(0);
 
     try {
@@ -47,7 +47,7 @@ const MicrophoneContextProvider = ({ children }) => {
         console.log(err.name);
       }
     }
-  };
+  }, []);
 
   const startMicrophone = useCallback(() => {
     microphone.connect(processor);
