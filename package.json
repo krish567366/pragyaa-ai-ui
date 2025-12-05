@@ -16,7 +16,7 @@
     "@react-hook/resize-observer": "^2.0.2",
     "@swc/helpers": "^0.5.15",
     "@uidotdev/usehooks": "^2.4.1",
-    "framer-motion": "^12.7.4",
+    "framer-motion": "^12.23.24",
     "next": "^13.5.6",
     "picocolors": "^1.1.1",
     "react": "^18.2.0",
@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@types/node": "20.14.10",
-    "@types/react": "^18.2.0",
+    "@types/react": "^19.2.2",
     "@typescript-eslint/eslint-plugin": "^7.16.0",
     "autoprefixer": "^10.4.20",
     "eslint": "^8",
