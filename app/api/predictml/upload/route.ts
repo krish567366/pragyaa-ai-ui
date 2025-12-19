@@ -68,56 +68,17 @@ export async function POST(request: Request) {
     await writeFile(filePath, new Uint8Array(buffer));
     console.log('File saved to:', filePath);
 
-    // Automatically trigger report generation
-    try {
-      const { spawn } = await import('child_process');
-      const scriptPath = join(process.cwd(), 'scripts', 'generate_report.py');
-      
-      // Prepare options for Python script
-      // You can customize these based on the file or user input
-      const scriptOptions = {
-        target_column: 'target', // Default - should be configurable
-        model_name: 'Data Analysis Report',
-        positive_class: null // Auto-detect
-      };
-
-      // Start Python process
-      const python = spawn('python3', [
-        scriptPath,
-        filePath,
-        reportId,
-        JSON.stringify(scriptOptions)
-      ]);
-
-      python.stdout.on('data', (data) => {
-        console.log('Python output:', data.toString());
-      });
-
-      python.stderr.on('data', (data) => {
-        console.error('Python error:', data.toString());
-      });
-
-      python.on('close', (code) => {
-        console.log(`Report generation completed with code ${code}`);
-      });
-
-      // Don't wait for Python to complete - return immediately
-      // The report will be generated in the background
-
-    } catch (error) {
-      console.error('Error triggering report generation:', error);
-      // Continue anyway - file is uploaded
-    }
+    // Note: Report generation will be triggered after validation step
+    // This allows users to review data quality before proceeding
 
     return NextResponse.json({
       success: true,
-      message: 'File uploaded successfully. Report generation started.',
+      message: 'File uploaded successfully. Ready for validation.',
       reportId,
       filename: file.name,
       size: file.size,
       uploadDate: new Date().toISOString(),
-      filePath: filePath,
-      downloadUrl: `/api/predictml/download/${reportId}`
+      filePath: filePath
     });
   } catch (error) {
     console.error('Upload error:', error);
