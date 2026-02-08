@@ -53,7 +53,7 @@ export async function GET(
       }
     }
   } catch (error) {
-    console.error('Status check error:', error);
+
     return NextResponse.json(
       { success: false, message: 'Error checking report status' },
       { status: 500 }

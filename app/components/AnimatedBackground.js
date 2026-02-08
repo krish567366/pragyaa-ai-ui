@@ -1,19 +1,27 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Player } from "@lottiefiles/react-lottie-player";
 import { withBasePath } from "../utils/deepgramUtils";
 
 const AnimatedBackground = ({ children }) => {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   return (
     <div>
-      <Player
-        autoplay
-        loop
-        src={withBasePath("/sts-bg.json")}
-        rendererSettings={{ preserveAspectRatio: "xMidYMid slice" }}
-        className="animatedBackground"
-      />
+      {isClient && (
+        <Player
+          autoplay
+          loop
+          src={withBasePath("/sts-bg.json")}
+          rendererSettings={{ preserveAspectRatio: "xMidYMid slice" }}
+          className="animatedBackground"
+        />
+      )}
       <div
         style={{
           position: "relative",

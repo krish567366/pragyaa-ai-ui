@@ -162,7 +162,27 @@ class DataValidator:
     def validate_target_column(self):
         """Analyze target column if specified"""
         if not self.target_column or self.target_column not in self.df.columns:
-            self.validation_results['target_analysis'] = {'status': 'No target column specified or found'}
+            # Try to suggest potential target columns
+            potential_targets = []
+            for col in self.df.columns:
+                unique_vals = self.df[col].nunique()
+                if 2 <= unique_vals <= 10:  # Good for classification
+                    col_lower = col.lower().replace('_', '').replace(' ', '')
+                    score = 0
+                    target_keywords = ['status', 'exit', 'left', 'churn', 'outcome', 'target', 'label', 'will', 'leave', 'risk', 'category']
+                    for keyword in target_keywords:
+                        if keyword in col_lower:
+                            score += 1
+                    if score > 0 or unique_vals <= 5:
+                        potential_targets.append({'column': col, 'unique_values': unique_vals, 'score': score})
+            
+            # Sort by score and unique values
+            potential_targets.sort(key=lambda x: (-x['score'], x['unique_values']))
+            
+            self.validation_results['target_analysis'] = {
+                'status': 'No target column specified',
+                'suggestions': potential_targets[:3]  # Top 3 suggestions
+            }
             return
         
         target_col = self.df[self.target_column]
@@ -171,9 +191,9 @@ class DataValidator:
         target_analysis = {
             'column_name': self.target_column,
             'unique_values': [str(v) for v in unique_values if pd.notna(v)],
-            'value_counts': target_col.value_counts().to_dict(),
+            'value_counts': {str(k): int(v) for k, v in target_col.value_counts().to_dict().items()},
             'missing_count': int(target_col.isnull().sum()),
-            'missing_percentage': round((target_col.isnull().sum() / len(target_col)) * 100, 2)
+            'missing_percentage': round(float((target_col.isnull().sum() / len(target_col)) * 100), 2)
         }
         
         # Determine if binary, multiclass, or regression
@@ -183,8 +203,8 @@ class DataValidator:
             value_counts = target_col.value_counts()
             minority_class_pct = (value_counts.min() / value_counts.sum()) * 100
             target_analysis['class_balance'] = {
-                'minority_class_percentage': round(minority_class_pct, 2),
-                'is_imbalanced': minority_class_pct < 30
+                'minority_class_percentage': round(float(minority_class_pct), 2),
+                'is_imbalanced': bool(minority_class_pct < 30)
             }
             
             if minority_class_pct < 10:
@@ -216,7 +236,7 @@ class DataValidator:
                 combinations.append({
                     'column': col,
                     'pattern': 'status_check',
-                    'values': status_counts.to_dict(),
+                    'values': {str(k): int(v) for k, v in status_counts.to_dict().items()},
                     'suggestion': f"Review {col} for data consistency"
                 })
         
@@ -275,7 +295,7 @@ class DataValidator:
     
     def run_validation(self):
         """Run complete validation suite"""
-        print("Starting data validation...")
+        print("Starting data validation...", file=sys.stderr)
         
         self.validate_overall_quality()
         self.validate_missing_data()
@@ -290,7 +310,7 @@ class DataValidator:
             'script_version': '1.0.0'
         }
         
-        print("Data validation completed!")
+        print("Data validation completed!", file=sys.stderr)
         return self.validation_results
 
 
@@ -319,11 +339,15 @@ def validate_data_from_file(file_path, target_column=None):
         
         # Auto-detect target column if not provided
         if not target_column:
-            # Look for common target column names
-            target_candidates = ['target', 'label', 'y', 'outcome', 'churn', 'attrition', 'left', 'exit']
+            # Look for common target column names (with partial matching)
+            target_candidates = ['target', 'label', 'y', 'outcome', 'churn', 'attrition', 'left', 'exit', 'status', 'will_leave', 'risk']
             for col in df.columns:
-                if col.lower() in target_candidates:
-                    target_column = col
+                col_lower = col.lower().replace('_', '').replace(' ', '')
+                for candidate in target_candidates:
+                    if candidate in col_lower or col_lower in candidate:
+                        target_column = col
+                        break
+                if target_column:
                     break
         
         # Create validator and run validation
@@ -332,7 +356,8 @@ def validate_data_from_file(file_path, target_column=None):
         
         return {
             'success': True,
-            'validation_results': results
+            'validation_results': results,
+            'detected_target_column': target_column
         }
         
     except Exception as e:
@@ -355,7 +380,7 @@ def main():
     target_column = sys.argv[2] if len(sys.argv) > 2 else None
     
     result = validate_data_from_file(file_path, target_column)
-    print(json.dumps(result, indent=2))
+    print(json.dumps(result))
 
 
 if __name__ == '__main__':

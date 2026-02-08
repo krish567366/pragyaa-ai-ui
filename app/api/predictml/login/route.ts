@@ -52,7 +52,7 @@ export async function POST(request: Request) {
       token
     });
   } catch (error) {
-    console.error('Login error:', error);
+
     return NextResponse.json(
       { success: false, message: 'Server error. Please try again.' },
       { status: 500 }

@@ -262,8 +262,12 @@ export default function ValidationResults({
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          onClick={onProceed}
+          onClick={(e) => {
+            e.preventDefault();
+            onProceed();
+          }}
           disabled={isLoading || errors.length > 0}
+          type="button"
           className={`flex-1 py-3 px-6 rounded-lg font-medium transition-all ${
             errors.length > 0
               ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
@@ -287,8 +291,12 @@ export default function ValidationResults({
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          onClick={onReject}
+          onClick={(e) => {
+            e.preventDefault();
+            onReject();
+          }}
           disabled={isLoading}
+          type="button"
           className="flex-1 sm:flex-initial px-6 py-3 border border-gray-600 text-gray-300 rounded-lg font-medium hover:bg-gray-800 transition-all"
         >
           Upload Different File

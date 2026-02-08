@@ -11,19 +11,14 @@ export default function HomePage() {
   const [showCalendly, setShowCalendly] = useState(false);
 
   useEffect(() => {
-    console.log("HomePage: Hash effect triggered.");
     const handleHashChange = () => {
-      console.log("HomePage: hashchange event detected. Current hash:", window.location.hash);
       if (window.location.hash === '#book-a-demo-section') {
-        console.log("HomePage: #book-a-demo-section found in hashchange, setting showCalendly to true.");
         setShowCalendly(true);
       }
     };
 
     // Check on initial load
-    console.log("HomePage: Initial hash check. Current hash:", window.location.hash);
     if (window.location.hash === '#book-a-demo-section') {
-      console.log("HomePage: #book-a-demo-section found on initial load, setting showCalendly to true.");
       setShowCalendly(true);
     }
 
@@ -32,17 +27,14 @@ export default function HomePage() {
 
     // Cleanup listener
     return () => {
-      console.log("HomePage: Cleaning up hashchange listener.");
       window.removeEventListener('hashchange', handleHashChange, false);
     };
   }, []);
 
   useEffect(() => {
     if (showCalendly) {
-      console.log("HomePage: showCalendly is true, attempting to init Calendly widget.");
       const calendlyContainer = document.getElementById('calendly-inline-widget');
       if (calendlyContainer && (window as any).Calendly) {
-        console.log("HomePage: Calendly container and Calendly API found, initializing widget.");
         calendlyContainer.innerHTML = '';
         (window as any).Calendly.initInlineWidget({
           url: 'https://calendly.com/pragyaa-info/30min',
@@ -50,11 +42,7 @@ export default function HomePage() {
           prefill: {},
           utm: {}
         });
-      } else {
-        console.warn("HomePage: Calendly container or Calendly API not found.", { calendlyContainer, calendlyGlobal: (window as any).Calendly });
       }
-    } else {
-      console.log("HomePage: showCalendly is false, Calendly widget not shown.");
     }
   }, [showCalendly]);
 
@@ -344,7 +332,7 @@ export default function HomePage() {
                   <button 
                     type="button"
                     onClick={() => {
-                      console.log("HomePage: 'Book a Demo' button clicked.");
+
                       setShowCalendly(true);
                     }}
                     className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors inline-block"

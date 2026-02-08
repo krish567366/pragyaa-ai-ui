@@ -41,7 +41,7 @@ export async function GET(
       },
     });
   } catch (error) {
-    console.error('Download error:', error);
+
     return NextResponse.json(
       { success: false, message: 'Error downloading report' },
       { status: 500 }

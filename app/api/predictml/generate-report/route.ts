@@ -35,12 +35,18 @@ export async function POST(request: Request) {
 
     // Execute Python script
     return new Promise<NextResponse>((resolve) => {
-      const python = spawn('python3', [
+      // Use virtual environment Python path
+      const pythonPath = join(process.cwd(), '.venv', 'bin', 'python');
+      const args = [
         scriptPath,
         filePath,
         reportId,
         JSON.stringify(scriptOptions)
-      ]);
+      ];
+      
+
+      
+      const python = spawn(pythonPath, args);
 
       let stdout = '';
       let stderr = '';
@@ -55,7 +61,6 @@ export async function POST(request: Request) {
 
       python.on('close', (code) => {
         if (code !== 0) {
-          console.error('Python script error:', stderr);
           resolve(NextResponse.json({
             success: false,
             message: 'Report generation failed',
@@ -81,17 +86,19 @@ export async function POST(request: Request) {
             }, { status: 500 }));
           }
         } catch (error) {
-          console.error('Error parsing Python output:', error);
+
           resolve(NextResponse.json({
             success: false,
             message: 'Error parsing report generation result',
-            output: stdout
+            error: `JSON parse error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            stdout_preview: stdout.substring(0, 500),
+            stderr_preview: stderr.substring(0, 500)
           }, { status: 500 }));
         }
       });
     });
   } catch (error) {
-    console.error('Generate report error:', error);
+
     return NextResponse.json(
       { success: false, message: 'Server error during report generation' },
       { status: 500 }

@@ -1,7 +1,18 @@
 import { NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
+import { writeFile, mkdir, readFile } from 'fs/promises';
 import { join } from 'path';
 import { existsSync } from 'fs';
+
+// Helper function to extract email from token (simple decode for demo)
+function extractEmailFromToken(token: string): string {
+  try {
+    const decoded = Buffer.from(token, 'base64').toString('utf-8');
+    const email = decoded.split(':')[0];
+    return email || 'unknown@email.com';
+  } catch {
+    return 'unknown@email.com';
+  }
+}
 
 export async function POST(request: Request) {
   try {
@@ -16,6 +27,7 @@ export async function POST(request: Request) {
 
     const formData = await request.formData();
     const file = formData.get('file') as File;
+    const targetColumn = formData.get('targetColumn') as string || 'target';
 
     if (!file) {
       return NextResponse.json(
@@ -66,22 +78,78 @@ export async function POST(request: Request) {
     const filePath = join(uploadsDir, fileName);
     
     await writeFile(filePath, new Uint8Array(buffer));
-    console.log('File saved to:', filePath);
 
-    // Note: Report generation will be triggered after validation step
-    // This allows users to review data quality before proceeding
+    // Extract user email from token for tracking
+    const token = authHeader.split(' ')[1] || '';
+    const userEmail = extractEmailFromToken(token);
 
-    return NextResponse.json({
-      success: true,
-      message: 'File uploaded successfully. Ready for validation.',
-      reportId,
+    // Save dataset metadata
+    const datasetMetadata = {
+      id: reportId,
       filename: file.name,
-      size: file.size,
+      filePath: filePath,
+      clientEmail: userEmail,
       uploadDate: new Date().toISOString(),
-      filePath: filePath
-    });
+      fileSize: file.size,
+      status: 'training', // Automatically starts training
+    };
+
+    // Save metadata to file
+    const metadataPath = join(process.cwd(), 'uploads', 'datasets-metadata.json');
+    let datasets = [];
+    if (existsSync(metadataPath)) {
+      const data = await readFile(metadataPath, 'utf-8');
+      datasets = JSON.parse(data);
+    }
+    datasets.push(datasetMetadata);
+    await writeFile(metadataPath, JSON.stringify(datasets, null, 2));
+
+    // Automatically trigger training
+    try {
+      const trainingResponse = await fetch(`${request.url.split('/upload')[0]}/auto-train`, {
+        method: 'POST',
+        headers: {
+          'Authorization': authHeader,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          datasetId: reportId,
+          filePath: filePath,
+          clientEmail: userEmail,
+          filename: file.name,
+          targetColumn: targetColumn
+        })
+      });
+
+      const trainingData = await trainingResponse.json();
+      
+      return NextResponse.json({
+        success: true,
+        message: 'File uploaded successfully. Model training started automatically.',
+        reportId,
+        filename: file.name,
+        size: file.size,
+        uploadDate: new Date().toISOString(),
+        filePath: filePath,
+        trainingJobId: trainingData.trainingJobId,
+        status: 'training'
+      });
+    } catch (trainingError) {
+      // Even if training fails to start, file is uploaded
+      return NextResponse.json({
+        success: true,
+        message: 'File uploaded successfully. Training will be initiated shortly.',
+        reportId,
+        filename: file.name,
+        size: file.size,
+        uploadDate: new Date().toISOString(),
+        filePath: filePath,
+        status: 'pending'
+      });
+    }
+
   } catch (error) {
-    console.error('Upload error:', error);
+
     return NextResponse.json(
       { success: false, message: 'Server error during upload. Please try again.' },
       { status: 500 }

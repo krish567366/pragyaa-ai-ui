@@ -12,6 +12,7 @@ from docx.shared import Inches, Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from datetime import datetime
 import io
+import sys
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -121,7 +122,7 @@ class GenericMLReportGenerator:
         self._add_page_headers(doc)
         
         doc.save(output_path)
-        print(f"Report generated successfully: {output_path}")
+        print(f"Report generated successfully: {output_path}", file=sys.stderr)
         
     def _add_cover_page(self, doc):
         """Create cover page"""
@@ -555,8 +556,8 @@ def generate_report_from_upload(file_path, target_column, model_name="Prediction
     else:
         df = pd.read_excel(file_path)
     
-    print(f"Loaded {len(df)} records from {file_path}")
-    print(f"Columns: {', '.join(df.columns.tolist())}")
+    print(f"Loaded {len(df)} records from {file_path}", file=sys.stderr)
+    print(f"Columns: {', '.join(df.columns.tolist())}", file=sys.stderr)
     
     # Generate output path if not provided
     if output_path is None:

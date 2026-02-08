@@ -25,7 +25,7 @@ export default function PredictMLDashboard() {
   const [dragActive, setDragActive] = useState(false);
   
   // Validation workflow states
-  const [currentStep, setCurrentStep] = useState<'upload' | 'validation' | 'processing'>('upload');
+  const [currentStep, setCurrentStep] = useState<'upload' | 'validation' | 'processing' | 'completed'>('upload');
   const [validationResults, setValidationResults] = useState<any>(null);
   const [validating, setValidating] = useState(false);
   const [filePath, setFilePath] = useState<string>('');
@@ -103,8 +103,8 @@ export default function PredictMLDashboard() {
         const data = await response.json();
 
         if (data.status === 'ready') {
-          // Report is ready!
-          setUploadStatus('✅ Report generated successfully! Click download to get your report.');
+          setUploadStatus('✅ Report generated successfully!');
+          setCurrentStep('completed'); // New step for completion
           
           const updatedReports = currentReports.map(r =>
             r.id === reportId
@@ -131,7 +131,7 @@ export default function PredictMLDashboard() {
           localStorage.setItem('predictMLReports', JSON.stringify(updatedReports));
         }
       } catch (error) {
-        console.error('Error checking status:', error);
+
         if (attempts < maxAttempts) {
           attempts++;
           setTimeout(checkStatus, 5000);
@@ -205,6 +205,7 @@ export default function PredictMLDashboard() {
 
       if (response.ok && data.success) {
         setValidationResults(data.validationResults);
+        setTargetColumn(data.detectedTargetColumn || data.targetColumn);
         setCurrentStep('validation');
         setUploadStatus('');
       } else {
@@ -219,6 +220,8 @@ export default function PredictMLDashboard() {
   };
 
   const handleProceedWithReport = async () => {
+
+    
     setCurrentStep('processing');
     setUploadStatus('Starting report generation...');
 
@@ -226,7 +229,10 @@ export default function PredictMLDashboard() {
       const token = localStorage.getItem('predictMLToken');
       const reportId = Date.now().toString();
 
-      // Call the generate-report API
+      // Call the generate-report API with timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+      
       const response = await fetch('/api/predictml/generate-report', {
         method: 'POST',
         headers: {
@@ -237,13 +243,17 @@ export default function PredictMLDashboard() {
           filePath: filePath,
           reportId: reportId,
           options: {
-            targetColumn: targetColumn || undefined,
+            targetColumn: targetColumn,
             modelName: 'Data Analysis Report'
           }
         }),
+        signal: controller.signal
       });
+      
+      clearTimeout(timeoutId);
 
       const data = await response.json();
+
 
       if (response.ok && data.success) {
         // Create report entry
@@ -263,19 +273,29 @@ export default function PredictMLDashboard() {
 
         setUploadStatus('Report generation started successfully!');
       } else {
-        setUploadStatus(`Failed to start report generation: ${data.message}`);
+
+        setUploadStatus(`❌ Report generation failed: ${data.message || data.error || 'Unknown error'} (Status: ${response.status})`);
       }
     } catch (error) {
-      setUploadStatus('Failed to start report generation. Please try again.');
-    }
 
-    // Reset states after a brief delay
-    setTimeout(() => {
-      setFile(null);
-      setValidationResults(null);
-      setCurrentStep('upload');
-      setUploadStatus('');
-    }, 3000);
+      
+      let errorMessage = 'Network error';
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          errorMessage = 'Request timeout - report generation is taking too long';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
+      setUploadStatus(`❌ Failed to start report generation: ${errorMessage}`);
+      
+      // Only reset states on error after a longer delay so user can see the error
+      setTimeout(() => {
+        setCurrentStep('validation'); // Go back to validation step, not upload
+        // Don't clear the upload status immediately - let user read the error
+      }, 10000);
+    }
   };
 
   const handleRejectFile = () => {
@@ -312,7 +332,7 @@ export default function PredictMLDashboard() {
           alert('Error downloading report. Please try again.');
         }
       } catch (error) {
-        console.error('Download error:', error);
+
         alert('Error downloading report. Please try again.');
       }
     }
@@ -472,6 +492,129 @@ export default function PredictMLDashboard() {
               onReject={handleRejectFile}
               isLoading={false}
             />
+          )}
+
+          {/* Processing Section */}
+          {currentStep === 'processing' && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-black/50 backdrop-blur-sm p-8 rounded-xl border border-purple-500/20"
+            >
+              <h2 className="text-2xl font-bold text-white mb-6">Generating ML Report</h2>
+              
+              <div className="flex items-center justify-center py-8">
+                <div className="flex items-center space-x-4">
+                  <div className="w-8 h-8 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin"></div>
+                  <span className="text-white text-lg">Processing your data...</span>
+                </div>
+              </div>
+              
+              {uploadStatus && (
+                <div className="bg-gray-800/50 rounded-lg p-4 mt-4">
+                  <p className={`text-sm ${
+                    uploadStatus.includes('❌') ? 'text-red-400' : 
+                    uploadStatus.includes('✅') ? 'text-green-400' : 
+                    'text-blue-400'
+                  }`}>
+                    {uploadStatus}
+                  </p>
+                </div>
+              )}
+              
+              <div className="mt-6 text-gray-400 text-sm">
+                <p>File: {filePath?.split('/').pop()}</p>
+                <p>Target Column: {targetColumn}</p>
+                <p>This process may take a few moments...</p>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Completion Section */}
+          {currentStep === 'completed' && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-black/50 backdrop-blur-sm p-8 rounded-xl border border-green-500/20"
+            >
+              <div className="text-center">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                </div>
+                <h2 className="text-2xl font-bold text-white mb-2">Report Generated Successfully!</h2>
+                <p className="text-gray-300 mb-8">
+                  Your ML analysis report is ready. Choose what you'd like to do next.
+                </p>
+                
+                <div className="flex flex-col gap-4 max-w-md mx-auto">
+                  <button
+                    onClick={() => {
+                      const reportId = localStorage.getItem('currentReportId');
+                      if (reportId) {
+                        window.open(`/api/predictml/download/${reportId}`, '_blank');
+                      }
+                    }}
+                    className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Download Report
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      setCurrentStep('upload');
+                      setUploadStatus('');
+                      setValidationResults(null);
+                      setFile(null);
+                      setFilePath('');
+                      setTargetColumn('');
+                    }}
+                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                    Upload Different File
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      if (validationResults) {
+                        setCurrentStep('validation');
+                        setUploadStatus('');
+                      }
+                    }}
+                    className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    Generate Another Report
+                  </button>
+                </div>
+
+                {uploadStatus && (
+                  <div className="bg-gray-800/50 rounded-lg p-4 mt-6">
+                    <p className={`text-sm ${
+                      uploadStatus.includes('❌') ? 'text-red-400' : 
+                      uploadStatus.includes('✅') ? 'text-green-400' : 
+                      'text-blue-400'
+                    }`}>
+                      {uploadStatus}
+                    </p>
+                  </div>
+                )}
+                
+                <div className="mt-6 text-gray-400 text-sm">
+                  <p>File: {filePath?.split('/').pop()}</p>
+                  <p>Target Column: {targetColumn}</p>
+                </div>
+              </div>
+            </motion.div>
           )}
         </div>
       </section>

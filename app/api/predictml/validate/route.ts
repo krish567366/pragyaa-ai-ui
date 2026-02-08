@@ -49,7 +49,9 @@ export async function POST(request: Request) {
     }
 
     return new Promise((resolve) => {
-      const python = spawn('python3', args);
+      // Use virtual environment Python path
+      const pythonPath = join(process.cwd(), '.venv', 'bin', 'python');
+      const python = spawn(pythonPath, args);
       
       let stdout = '';
       let stderr = '';
@@ -64,7 +66,6 @@ export async function POST(request: Request) {
 
       python.on('close', (code) => {
         if (code !== 0) {
-          console.error('Python validation error:', stderr);
           resolve(
             NextResponse.json(
               { 
@@ -100,14 +101,14 @@ export async function POST(request: Request) {
             success: true,
             message: 'Data validation completed successfully',
             filePath,
-            targetColumn: targetColumn || 'auto-detected',
+            targetColumn: targetColumn || result.detected_target_column || 'auto-detected',
+            detectedTargetColumn: result.detected_target_column,
             validationResults: result.validation_results,
             timestamp: new Date().toISOString()
           };
 
           resolve(NextResponse.json(validationResponse));
         } catch (parseError) {
-          console.error('Failed to parse validation output:', parseError);
           resolve(
             NextResponse.json(
               { 
@@ -138,7 +139,6 @@ export async function POST(request: Request) {
     });
 
   } catch (error) {
-    console.error('Validation API error:', error);
     return NextResponse.json(
       { success: false, message: 'Server error during validation' },
       { status: 500 }
